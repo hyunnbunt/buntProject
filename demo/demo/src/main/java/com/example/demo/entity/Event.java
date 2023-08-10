@@ -22,6 +22,6 @@ public class Event {
     @JoinColumn(nullable = false)
     Dog organizerDog;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "participatingEvents")
     Set<Dog> participantDogs;
 }
