@@ -1,8 +1,6 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import org.antlr.v4.runtime.misc.NotNull;
-import org.springframework.lang.NonNull;
 
 import java.util.Set;
 
@@ -17,8 +15,8 @@ public class Dog {
     int age;
     Long weight;
     String sex;
-//    @ManyToMany
-//    Set<Dog> friends;
+    @ManyToMany
+    Set<Dog> friends;
     @OneToMany(mappedBy = "dog", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<Location> locations;
     int happinessPoints;
