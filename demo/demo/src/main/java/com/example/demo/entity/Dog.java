@@ -8,7 +8,6 @@ import java.util.Set;
 
 @Entity
 public class Dog {
-    @Column(name="dog_id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -23,8 +22,9 @@ public class Dog {
 //    @OneToMany(mappedBy = "dog")
 //    Set<Location> locations;
     int happinessPoints;
-//    @OneToMany
-//    Set<Event> participatingEvents;
-//    @ManyToMany
-//    Set<Event> organizingEvents;
+    @OneToMany(mappedBy = "organizerDog")
+    Set<Event> organizingEvents;
+    @ManyToMany
+    Set<Event> participatingEvents;
+
 }
