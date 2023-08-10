@@ -12,7 +12,8 @@ public class Dog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-//  Owner owner;
+    @ManyToOne
+    Owner owner;
     String name;
     int age;
     Long weight;
