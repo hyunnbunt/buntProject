@@ -11,7 +11,7 @@ public class Location {
     Long latitude;
     @Column(nullable = false)
     Long longitude;
-    @ManyToOne
-    @JoinColumn(nullable = false)
+    @ManyToOne(targetEntity = Dog.class, fetch=FetchType.LAZY)
+    @JoinColumn(name = "dog_id", nullable = false)
     Dog dog;
 }

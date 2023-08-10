@@ -17,8 +17,6 @@ public class Dog {
     String sex;
     @ManyToMany
     Set<Dog> friends;
-    @OneToMany(mappedBy = "dog", cascade = CascadeType.ALL, orphanRemoval = true)
-    Set<Location> locations;
     int happinessPoints;
     @OneToMany(mappedBy = "organizerDog")
     Set<Event> organizingEvents;

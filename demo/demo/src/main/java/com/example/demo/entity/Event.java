@@ -19,7 +19,7 @@ public class Event {
     Long longitude;
 
     @ManyToOne
-    @JoinColumn(name = "organizer_dog_id", nullable = false)
+    @JoinColumn(nullable = false)
     Dog organizerDog;
 
     @ManyToMany
