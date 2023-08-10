@@ -11,14 +11,14 @@ public class Dog {
     @Column(name="dog_id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    Long id;
-//    Owner owner;
+    Long id;
+//  Owner owner;
     String name;
     int age;
     Long weight;
     String sex;
-    @ManyToMany
-    Set<Dog> friends;
+//    @ManyToMany
+//    Set<Dog> friends;
 //    @OneToMany(mappedBy = "dog")
 //    Set<Location> locations;
     int happinessPoints;
