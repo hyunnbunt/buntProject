@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.Dog;
-import com.example.demo.service.DogsService;
+import com.example.demo.service.DogService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,11 +14,11 @@ import java.util.List;
 @Slf4j
 public class DogsController {
     @Autowired
-    DogsService dogsService;
+    DogService dogService;
 
-    @GetMapping("/dogs")
+    @GetMapping("bunt-project/dogs")
     public String showDogs(Model model) {
-        List<Dog> dogs = dogsService.showDogs();
+        List<Dog> dogs = dogService.showDogs();
         model.addAttribute("dogs", dogs);
         return "dogs/showDogs";
     }
