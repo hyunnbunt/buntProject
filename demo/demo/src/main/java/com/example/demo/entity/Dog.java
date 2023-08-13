@@ -1,12 +1,16 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
 @Entity
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Dog {
     @Column
     @Id
