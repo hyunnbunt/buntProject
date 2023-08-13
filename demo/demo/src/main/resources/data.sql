@@ -1,5 +1,5 @@
-insert into OWNER(name) values ("Junseok");
-insert into OWNER(name) values ("Hyuna");
+insert into OWNER(NAME) values("Junseok");
+insert into OWNER(NAME) values("Hyuna");
 
 insert into dog(owner_id, name, age, weight, sex) values (1, "Bunt", 4, 6.2, male);
 insert into dog(owner_id, name, age, weight, sex) values (1, "Lana", 10, 3.5, female);
