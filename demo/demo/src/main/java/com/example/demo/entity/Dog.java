@@ -18,9 +18,24 @@ public class Dog {
     @ManyToMany
     Set<Dog> friends;
     int happinessPoints;
-    @OneToMany(mappedBy = "organizerDog")
+    @OneToMany(mappedBy = "organizerDog", cascade = CascadeType.REMOVE)
     Set<Event> organizingEvents;
     @ManyToMany
     Set<Event> participatingEvents;
 
+    @Override
+    public String toString() {
+        return "Dog{" +
+                "id=" + id +
+                ", owner=" + owner +
+                ", name='" + name + '\'' +
+                ", age=" + age +
+                ", weight=" + weight +
+                ", sex='" + sex + '\'' +
+                ", friends=" + friends +
+                ", happinessPoints=" + happinessPoints +
+                ", organizingEvents=" + organizingEvents +
+                ", participatingEvents=" + participatingEvents +
+                '}';
+    }
 }

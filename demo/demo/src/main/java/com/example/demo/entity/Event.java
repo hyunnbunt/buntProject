@@ -9,16 +9,16 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-
+    @Column(nullable = false)
     Long date;
-
+    @Column(nullable = false)
     Long time;
-
+    @Column(nullable = false)
     Long latitude;
-
+    @Column(nullable = false)
     Long longitude;
 
-    @ManyToOne
+    @ManyToOne(optional = true)
     @JoinColumn(nullable = false)
     Dog organizerDog;
 

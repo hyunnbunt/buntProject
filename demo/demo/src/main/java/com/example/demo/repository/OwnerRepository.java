@@ -1,7 +1,7 @@
 package com.example.demo.repository;
 
 import com.example.demo.entity.Owner;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface OwnerRepository extends CrudRepository<Owner, Long> {
+public interface OwnerRepository extends JpaRepository<Owner, Long> {
 }
