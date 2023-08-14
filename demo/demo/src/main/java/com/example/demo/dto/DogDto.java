@@ -29,7 +29,7 @@ public class DogDto {
         return new Dog(id, owner, name, age, weight, sex, friends, happinessPoints, organizingEvents, participatingEvents);
     }
 
-    public static DogDto FromEntity(Dog dog) {
+    public static DogDto fromEntity(Dog dog) {
         return new DogDto(dog.getId(), dog.getOwner(), dog.getName(), dog.getAge(), dog.getWeight(), dog.getSex(), dog.getFriends(), dog.getHappinessPoints(), dog.getOrganizingEvents(), dog.getParticipatingEvents());
     }
 }

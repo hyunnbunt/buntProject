@@ -33,7 +33,7 @@ public class Dog {
     Set<Dog> friends;
     @Column
     Integer happinessPoints;
-    @OneToMany(mappedBy = "organizerDog", cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "organizerDog", cascade = CascadeType.REMOVE)
     Set<Event> organizingEvents;
     @ManyToMany
     Set<Event> participatingEvents;

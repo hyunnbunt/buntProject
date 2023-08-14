@@ -28,15 +28,15 @@ public class DogsApiController {
     }
 
     @PostMapping("dogs")
-    public ResponseEntity<Dog> createDog(@RequestBody DogDto dogDto) {
+    public ResponseEntity<DogDto> createDog(@RequestBody DogDto dogDto) {
         // dto를 entity로 변환하는 것도 service에 맡김
-       Dog createdDog = dogService.createDog(dogDto);
+       DogDto createdDogDto = dogService.createDog(dogDto);
        // 이미 dogService에서 성공적으로 db에 저장해서 반환한 entity가 null이 될 수 있나?
         // 될 수 있다. db에 저장 요청을 받아서 성공적으로 리턴은 받았어도, db에서 어떠한 에러가 있었으면
         // repository에서 null을 리턴한다.
         // 그렇다고 해도 왜 HttpStatus 코드가 왜 Bad request인지?
-       return (createdDog != null) ?
-            ResponseEntity.status(HttpStatus.OK).body(createdDog):
+       return (createdDogDto != null) ?
+            ResponseEntity.status(HttpStatus.OK).body(createdDogDto):
                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
