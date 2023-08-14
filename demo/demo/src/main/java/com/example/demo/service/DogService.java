@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.DogDto;
+import com.example.demo.dto.DogProfileDto;
 import com.example.demo.entity.Dog;
 import com.example.demo.repository.DogRepository;
 import jakarta.transaction.Transactional;
@@ -24,20 +24,20 @@ public class DogService {
     }
 
     @Transactional
-    public DogDto createDog(DogDto dogDto) {
+    public DogProfileDto createDog(DogProfileDto dogProfileDto) {
         // 홍팍쌤은 entity레벨에서 id를 조회했는데, 내 생각에는 미리 조회하는 게 더 좋을 것 같다.
         // 차이가 있는지?
-        if (dogDto.getId() != null) {
+        if (dogProfileDto.getId() != null) {
             return null;
         }
-        Dog newDog = dogDto.toEntity();
+        Dog newDog = dogProfileDto.toEntity();
         dogRepository.save(newDog);
-        return DogDto.fromEntity(newDog);
+        return DogProfileDto.fromEntity(newDog);
     }
 
     @Transactional
-    public DogDto updateDog(@PathVariable Long id, DogDto dogDto) {
-        Dog newDog = dogDto.toEntity();
+    public DogProfileDto updateDog(@PathVariable Long id, DogProfileDto dogProfileDto) {
+        Dog newDog = dogProfileDto.toEntity();
         Dog target = dogRepository.findById(id).orElse(null);
         if (target == null || !id.equals(target.getId())) {
             return null;
@@ -46,16 +46,16 @@ public class DogService {
             return null;
         }
         dogRepository.save(target);
-        return DogDto.fromEntity(target);
+        return DogProfileDto.fromEntity(target);
     }
 
     @Transactional
-    public DogDto deleteDog(@PathVariable Long id) {
+    public DogProfileDto deleteDog(@PathVariable Long id) {
         Dog target = dogRepository.findById(id).orElse(null);
         if (target == null) {
             return null;
         }
         dogRepository.delete(target);
-        return DogDto.fromEntity(target);
+        return DogProfileDto.fromEntity(target);
     }
 }
