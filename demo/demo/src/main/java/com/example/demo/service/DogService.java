@@ -31,4 +31,16 @@ public class DogService {
         Dog newDog = dogDto.toEntity();
         return dogRepository.save(newDog);
     }
+
+    public Dog updateDog(@PathVariable Long id, DogDto dogDto) {
+        Dog newDog = dogDto.toEntity();
+        Dog target = dogRepository.findById(id).orElse(null);
+        if (target == null || !id.equals(target.getId())) {
+            return null;
+        }
+        if (!target.patch(newDog)) {
+            return null;
+        }
+        return dogRepository.save(target);
+    }
 }
