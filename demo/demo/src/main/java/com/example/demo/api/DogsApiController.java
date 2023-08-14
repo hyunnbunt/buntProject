@@ -3,6 +3,7 @@ package com.example.demo.api;
 import com.example.demo.dto.DogDto;
 import com.example.demo.entity.Dog;
 import com.example.demo.service.DogService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.http.HttpResponse;
 import java.util.List;
 
+@Slf4j
 @RestController
 public class DogsApiController {
     @Autowired
@@ -39,10 +41,18 @@ public class DogsApiController {
     }
 
     @PatchMapping("dogs/{id}")
-    public ResponseEntity<Dog> updateDog(@RequestBody Long id, @RequestBody DogDto dogDto) {
-        Dog updatedDog = dogService.updateDog(id, dogDto);
-        return (updatedDog != null) ?
-            ResponseEntity.status(HttpStatus.OK).body(updatedDog):
+    public ResponseEntity<DogDto> updateDog(@PathVariable Long id, @RequestBody DogDto dogDto) {
+        DogDto updatedDogDto = dogService.updateDog(id, dogDto);
+        return (updatedDogDto != null) ?
+            ResponseEntity.status(HttpStatus.OK).body(updatedDogDto):
+                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    @DeleteMapping("dogs/{id}")
+    public ResponseEntity<DogDto> deleteDog(@PathVariable Long id) {
+        DogDto deletedDogDto = dogService.deleteDog(id);
+        return (deletedDogDto != null) ?
+            ResponseEntity.status(HttpStatus.OK).body(deletedDogDto):
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }
