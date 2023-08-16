@@ -6,8 +6,8 @@ import lombok.Getter;
 import java.util.Set;
 
 @Entity
+@Getter
 public class Owner {
-    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;

@@ -7,6 +7,7 @@ import com.example.demo.repository.DogRepository;
 import com.example.demo.repository.OwnerRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -15,11 +16,16 @@ import java.util.stream.Collectors;
 
 @Service
 public class DogService {
-    @Autowired
-    DogRepository dogRepository;
+
+    private DogRepository dogRepository;
+    OwnerService ownerService;
 
     @Autowired
-    OwnerService ownerService;
+    public DogService(DogRepository dogRepository, OwnerService ownerService) {
+        this.dogRepository = dogRepository;
+        this.ownerService = ownerService;
+    }
+
 
     public List<DogProfileDto> showDogs() {
 

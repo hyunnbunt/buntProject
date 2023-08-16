@@ -1,8 +1,9 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.DogProfileDto;
-import com.example.demo.entity.Dog;
+import com.example.demo.dto.DogShowMustacheDto;
 import com.example.demo.service.DogService;
+import com.example.demo.service.OwnerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,13 +15,25 @@ import java.util.List;
 @Controller
 @Slf4j
 public class DogsController {
+
+    private DogService dogService;
+    private OwnerService ownerService;
+
     @Autowired
-    DogService dogService;
+    public DogsController(DogService dogService, OwnerService ownerService) {
+        this.ownerService = ownerService;
+        this.dogService = dogService;
+    }
 
     @GetMapping("bunt-project/dogs")
     public String showDogs(Model model) {
         List<DogProfileDto> dogs = dogService.showDogs();
-        model.addAttribute("dogs", dogs);
+        List<DogShowMustacheDto> dogShowMustacheDtos =
+                dogs.stream().map(dogProfileDto -> DogShowMustacheDto.fromDogProfileDto(dogProfileDto))
+                                .toList();
+
+        model.addAttribute("dogs", dogShowMustacheDtos);
+
         return "dogs/showDogs";
     }
 }

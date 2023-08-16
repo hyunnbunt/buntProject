@@ -15,8 +15,11 @@ import java.util.List;
 @Slf4j
 @RestController
 public class DogsApiController {
+    private DogService dogService;
     @Autowired
-    DogService dogService;
+    public DogsApiController(DogService dogService) {
+        this.dogService = dogService;
+    }
     @GetMapping("dogs")
     public List<DogProfileDto> showDogs() {
         return dogService.showDogs();
