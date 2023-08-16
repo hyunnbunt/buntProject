@@ -1,6 +1,7 @@
 package com.example.demo.api;
 
 import com.example.demo.dto.DogProfileDto;
+import com.example.demo.dto.DogUpdateDto;
 import com.example.demo.entity.Dog;
 import com.example.demo.service.DogService;
 import lombok.extern.slf4j.Slf4j;
@@ -17,12 +18,12 @@ public class DogsApiController {
     @Autowired
     DogService dogService;
     @GetMapping("dogs")
-    public List<Dog> showDogs() {
+    public List<DogProfileDto> showDogs() {
         return dogService.showDogs();
     }
 
     @GetMapping("dogs/{id}")
-    public Dog showDogProfile(@PathVariable Long id) {
+    public DogProfileDto showDogProfile(@PathVariable Long id) {
         return dogService.showDogProfile(id);
     }
 
@@ -40,10 +41,10 @@ public class DogsApiController {
     }
 
     @PatchMapping("dogs/{id}")
-    public ResponseEntity<DogProfileDto> updateDog(@PathVariable Long id, @RequestBody DogProfileDto dogProfileDto) {
-        DogProfileDto updatedDogProfileDto = dogService.updateDog(id, dogProfileDto);
-        return (updatedDogProfileDto != null) ?
-            ResponseEntity.status(HttpStatus.OK).body(updatedDogProfileDto):
+    public ResponseEntity<DogUpdateDto> updateDog(@PathVariable Long id, @RequestBody DogUpdateDto dogUpdateDto) {
+        DogUpdateDto updatedDogDto = dogService.updateDog(id, dogUpdateDto);
+        return (updatedDogDto != null) ?
+            ResponseEntity.status(HttpStatus.OK).body(updatedDogDto):
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 

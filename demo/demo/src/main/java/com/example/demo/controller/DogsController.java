@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.DogProfileDto;
 import com.example.demo.entity.Dog;
 import com.example.demo.service.DogService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,7 @@ public class DogsController {
 
     @GetMapping("bunt-project/dogs")
     public String showDogs(Model model) {
-        List<Dog> dogs = dogService.showDogs();
+        List<DogProfileDto> dogs = dogService.showDogs();
         model.addAttribute("dogs", dogs);
         return "dogs/showDogs";
     }

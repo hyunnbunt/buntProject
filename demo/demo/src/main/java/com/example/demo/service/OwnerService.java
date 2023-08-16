@@ -12,8 +12,6 @@ public class OwnerService {
     @Autowired
     OwnerRepository ownerRepository;
     public Owner getOwnerEntity(Long id) {
-        return ownerRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("잘못된 접근입니다. 보호자가 존재하지 않는 강아지.")
-        );
+        return ownerRepository.findById(id).orElse(null);
     }
 }

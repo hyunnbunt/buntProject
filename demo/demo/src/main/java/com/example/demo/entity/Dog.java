@@ -39,7 +39,7 @@ public class Dog {
     Set<Event> participatingEvents;
 
     public boolean patch(Dog newDog) {
-        if (newDog.owner == null && newDog.name == null && newDog.age == null && newDog.weight == null && newDog.sex == null && newDog.friends == null && newDog.happinessPoints == null && newDog.organizingEvents == null && newDog.participatingEvents == null) {
+        if (newDog.owner == null && newDog.name == null && newDog.age == null && newDog.weight == null && newDog.sex == null) {
             return false;
         }
         if (newDog.owner != null) {
@@ -57,19 +57,7 @@ public class Dog {
         if (newDog.sex != null) {
             this.sex = newDog.sex;
         }
-        if (newDog.friends != null) {
-            this.friends = newDog.friends;
-        }
-        if (newDog.happinessPoints != null) {
-            this.happinessPoints = newDog.happinessPoints;
-        }
-        if (newDog.organizingEvents != null) {
-            this.organizingEvents = newDog.organizingEvents;
-        }
-        if (newDog.participatingEvents != null) {
-            this.participatingEvents = newDog.participatingEvents;
-        }
-        return true;
+        return newDog.friends == null && newDog.happinessPoints == null && newDog.organizingEvents == null && newDog.participatingEvents == null;
     }
 
     @Override

@@ -1,26 +1,42 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.DogProfileDto;
+import com.example.demo.dto.DogUpdateDto;
 import com.example.demo.entity.Dog;
 import com.example.demo.repository.DogRepository;
+import com.example.demo.repository.OwnerRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DogService {
     @Autowired
     DogRepository dogRepository;
 
-    public List<Dog> showDogs() {
-        return dogRepository.findAll();
+    @Autowired
+    OwnerService ownerService;
+
+    public List<DogProfileDto> showDogs() {
+
+        List<Dog> dogList = dogRepository.findAll();
+
+        List<DogProfileDto> dogProfileDtoList =
+                dogList.stream()
+                .map(dog -> DogProfileDto.fromEntity(dog))
+                .collect(Collectors.toList());
+        return dogProfileDtoList;
     }
 
-    public Dog showDogProfile(@PathVariable Long id) {
-        return dogRepository.findById(id).orElse(null);
+    public DogProfileDto showDogProfile(@PathVariable Long id) {
+        Dog dog = dogRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("없는 강아지")
+        );
+        return DogProfileDto.fromEntity(dog);
     }
 
     @Transactional
@@ -30,14 +46,14 @@ public class DogService {
         if (dogProfileDto.getId() != null) {
             return null;
         }
-        Dog newDog = dogProfileDto.toEntity();
+        Dog newDog = dogProfileDto.toEntity(ownerService);
         dogRepository.save(newDog);
         return DogProfileDto.fromEntity(newDog);
     }
 
     @Transactional
-    public DogProfileDto updateDog(@PathVariable Long id, DogProfileDto dogProfileDto) {
-        Dog newDog = dogProfileDto.toEntity();
+    public DogUpdateDto updateDog(@PathVariable Long id, DogUpdateDto dogUpdateDto) {
+        Dog newDog = dogUpdateDto.toEntity();
         Dog target = dogRepository.findById(id).orElse(null);
         if (target == null || !id.equals(target.getId())) {
             return null;
@@ -46,7 +62,7 @@ public class DogService {
             return null;
         }
         dogRepository.save(target);
-        return DogProfileDto.fromEntity(target);
+        return DogUpdateDto.fromEntity(target);
     }
 
     @Transactional
