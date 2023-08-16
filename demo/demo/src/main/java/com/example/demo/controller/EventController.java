@@ -21,8 +21,10 @@ public class EventController {
     }
 
     @GetMapping("/bunt-project/events")
-    public List<EventDto> showEvents(Model model) {
-        
+    public String showEvents(Model model) {
+        List<EventDto> eventDtoList = eventService.showEvents();
+        model.addAttribute("events", eventDtoList);
+        return "events/showEvents/";
     }
 
 

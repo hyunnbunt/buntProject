@@ -1,10 +1,12 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.util.Set;
 
 @Entity
+@Getter
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
