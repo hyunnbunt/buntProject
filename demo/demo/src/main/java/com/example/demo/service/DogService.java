@@ -1,17 +1,21 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.DogEventUpdateDto;
 import com.example.demo.dto.DogProfileDto;
 import com.example.demo.dto.DogUpdateDto;
 import com.example.demo.entity.Dog;
+import com.example.demo.entity.Event;
 import com.example.demo.repository.DogRepository;
-import com.example.demo.repository.OwnerRepository;
+import com.example.demo.repository.EventRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,11 +23,14 @@ public class DogService {
 
     private DogRepository dogRepository;
     OwnerService ownerService;
+    private EventRepository eventRepository;
+
 
     @Autowired
-    public DogService(DogRepository dogRepository, OwnerService ownerService) {
+    public DogService(DogRepository dogRepository, OwnerService ownerService, EventRepository eventRepository) {
         this.dogRepository = dogRepository;
         this.ownerService = ownerService;
+        this.eventRepository = eventRepository;
     }
 
 
@@ -79,5 +86,20 @@ public class DogService {
         }
         dogRepository.delete(target);
         return DogProfileDto.fromEntity(target);
+    }
+
+    public DogEventUpdateDto joinEvent(@PathVariable Long dogId, @PathVariable Long eventId) {
+        Event targetEvent = eventRepository.findById(eventId).orElse(null);
+        if (targetEvent == null || !eventId.equals(targetEvent.getId())) {
+            return null;
+        }
+        Dog targetDog = dogRepository.findById(dogId).orElse(null);
+        if (targetDog == null || !dogId.equals(targetDog.getId())) {
+            return null;
+        }
+        if (!targetDog.addEvent(targetEvent)) {
+            return null;
+        }
+        return new DogEventUpdateDto(targetDog.getId(), targetEvent.getId());
     }
 }

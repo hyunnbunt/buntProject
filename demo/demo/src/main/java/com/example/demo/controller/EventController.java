@@ -26,12 +26,12 @@ public class EventController {
 
     @GetMapping("bunt-project/events")
     public String showEvents(Model model) {
-        List<EventDto> eventDtoList = eventService.showEvents();
-        if (eventDtoList.isEmpty()) {
-            log.info("No events");
-            return "events/noEvents/";
-        }
-        model.addAttribute("events", eventDtoList);
+//        List<EventDto> eventDtoList = eventService.showEvents();
+//        if (eventDtoList.isEmpty()) {
+//            log.info("No events");
+//            return "events/noEvents/";
+//        }
+//        model.addAttribute("events", eventDtoList);
         return "events/showEvents/";
     }
 

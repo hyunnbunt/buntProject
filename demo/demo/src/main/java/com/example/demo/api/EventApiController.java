@@ -2,19 +2,19 @@ package com.example.demo.api;
 
 import com.example.demo.dto.EventDto;
 import com.example.demo.service.EventService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@Slf4j
 public class EventApiController {
 
     private EventService eventService;
-
     @Autowired
     public EventApiController(EventService eventService) {
         this.eventService = eventService;
@@ -24,6 +24,20 @@ public class EventApiController {
     public List<EventDto> showEvents() {
         return eventService.showEvents();
     }
+
+    @GetMapping("/events/{id}")
+    public EventDto showEventDetail(@PathVariable Long id) {
+        return eventService.showEventDetail(id);
+    }
+
+    @PostMapping("/events")
+    public EventDto createEvent(@RequestBody EventDto eventDto) {
+        // validation 필요, 들어온 데이터로 dto를 만들 때, null이 될 수 없는 필드가 제대로 들어왔는지 체크하고
+        // response 바로 주는 것이 좋을 것 같다. 지금은 왜 null이 아닌지 모르겠음....
+        return eventService.createEvent(eventDto);
+    }
+
+
 
     // RestAPI
     //    GET (/events) : see all today’s events

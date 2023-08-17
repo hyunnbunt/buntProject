@@ -1,8 +1,8 @@
 package com.example.demo.api;
 
+import com.example.demo.dto.DogEventUpdateDto;
 import com.example.demo.dto.DogProfileDto;
 import com.example.demo.dto.DogUpdateDto;
-import com.example.demo.entity.Dog;
 import com.example.demo.service.DogService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,23 +32,33 @@ public class DogsApiController {
 
     @PostMapping("dogs")
     public ResponseEntity<DogProfileDto> createDog(@RequestBody DogProfileDto dogProfileDto) {
-        // dto를 entity로 변환하는 것도 service에 맡김
        DogProfileDto createdDogProfileDto = dogService.createDog(dogProfileDto);
-       // 이미 dogService에서 성공적으로 db에 저장해서 반환한 entity가 null이 될 수 있나?
-        // 될 수 있다. db에 저장 요청을 받아서 성공적으로 리턴은 받았어도, db에서 어떠한 에러가 있었으면
-        // repository에서 null을 리턴한다.
-        // 그렇다고 해도 왜 HttpStatus 코드가 왜 Bad request인지?
        return (createdDogProfileDto != null) ?
             ResponseEntity.status(HttpStatus.OK).body(createdDogProfileDto):
                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        // 이미 dogService에서 성공적으로 db에 저장해서 반환한 entity가 null이 될 수 있나?
+        // 될 수 있다. db에 저장 요청을 받아서 성공적으로 리턴은 받았어도, db에서 어떠한 에러가 있었으면
+        // repository에서 null을 리턴한다.
+        // 그렇다고 해도 왜 HttpStatus 코드가 왜 Bad request인지?
     }
 
+
+    /** Updates only basic fields of a dog's profile. Can't update organizing/participating events.  */
     @PatchMapping("dogs/{id}")
     public ResponseEntity<DogUpdateDto> updateDog(@PathVariable Long id, @RequestBody DogUpdateDto dogUpdateDto) {
         DogUpdateDto updatedDogDto = dogService.updateDog(id, dogUpdateDto);
         return (updatedDogDto != null) ?
             ResponseEntity.status(HttpStatus.OK).body(updatedDogDto):
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    @PatchMapping(value = {"dogs/{dogId}/{eventId}"})
+    public ResponseEntity<DogEventUpdateDto> joinEvent(@PathVariable Long dogId, @PathVariable Long eventId) {
+        DogEventUpdateDto eventUpdatedDogDto = dogService.joinEvent(dogId, eventId);
+        return (eventUpdatedDogDto != null) ?
+                ResponseEntity.status(HttpStatus.OK).body(eventUpdatedDogDto):
+                    ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     @DeleteMapping("dogs/{id}")

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -65,5 +66,16 @@ public class Dog {
         return "Dog{" +
                 "name='" + name + '\'' +
                 '}';
+    }
+
+    public boolean addEvent(Event targetEvent) {
+        if (this.participatingEvents == null) {
+            this.participatingEvents = new HashSet();
+        }
+        if (this.participatingEvents.contains(targetEvent)) {
+            return false;
+        }
+        this.participatingEvents.add(targetEvent);
+        return true;
     }
 }
