@@ -64,7 +64,7 @@ public class Dog {
     @Override
     public String toString() {
         return "Dog{" +
-                "name='" + name + '\'' +
+                "name='" + this.name + '\'' +
                 '}';
     }
 

@@ -1,12 +1,15 @@
 package com.example.demo.dto;
 
 import com.example.demo.entity.Dog;
+import com.example.demo.entity.Event;
 import com.example.demo.entity.Owner;
 import com.example.demo.service.OwnerService;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Set;
 
 @NoArgsConstructor
 @Setter
@@ -18,6 +21,7 @@ public class DogProfileDto {
     Integer age;
     Long weight;
     String sex;
+    Set<Event> participatingEvents;
 
     public Dog toEntity(OwnerService ownerService) {
         Dog dogEntity = new Dog();
@@ -36,6 +40,9 @@ public class DogProfileDto {
         dogEntity.setAge(this.age);
         dogEntity.setWeight(this.weight);
         dogEntity.setSex(this.sex);
+        // always null when this method is executed :
+        // can't join an event while creating new dog profile.
+        dogEntity.setParticipatingEvents(this.participatingEvents);
         return dogEntity;
     }
 
@@ -47,6 +54,8 @@ public class DogProfileDto {
         dogProfileDto.setAge(dog.getAge());
         dogProfileDto.setWeight(dog.getWeight());
         dogProfileDto.setSex(dog.getSex());
+        // 문제 의심되는 곳. event가 등록되지 않음.
+        dogProfileDto.setParticipatingEvents(dog.getParticipatingEvents());
         return dogProfileDto;
     }
 }

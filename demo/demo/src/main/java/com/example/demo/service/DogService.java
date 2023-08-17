@@ -8,6 +8,7 @@ import com.example.demo.entity.Event;
 import com.example.demo.repository.DogRepository;
 import com.example.demo.repository.EventRepository;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +20,7 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class DogService {
 
     private DogRepository dogRepository;
@@ -100,6 +102,16 @@ public class DogService {
         if (!targetDog.addEvent(targetEvent)) {
             return null;
         }
-        return new DogEventUpdateDto(targetDog.getId(), targetEvent.getId());
+        DogEventUpdateDto dogEventUpdateDto = new DogEventUpdateDto();
+        dogEventUpdateDto.setDogId(targetDog.getId());
+        if (targetDog.getParticipatingEvents().contains(targetEvent)) {
+            log.info("contains");
+            dogEventUpdateDto.setParticipatingEventId(targetEvent.getId());
+        } else {
+            throw new IllegalArgumentException();
+        }
+        dogRepository.save(targetDog);
+        log.info(dogRepository.findById(dogId).orElse(null).getParticipatingEvents().toString());
+        return dogEventUpdateDto;
     }
 }

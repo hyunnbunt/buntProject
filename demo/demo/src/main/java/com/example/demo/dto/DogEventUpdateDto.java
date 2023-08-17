@@ -12,5 +12,5 @@ import lombok.Setter;
 @Getter
 public class DogEventUpdateDto {
     Long dogId;
-    Long participatingEvent;
+    Long participatingEventId;
 }

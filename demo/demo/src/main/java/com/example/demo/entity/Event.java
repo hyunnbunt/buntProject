@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Set;
 
@@ -11,6 +12,7 @@ import java.util.Set;
 @NoArgsConstructor // Entity는 항상 defaul constructor가 필요
 @Getter
 @Setter
+@ToString
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,4 +40,12 @@ public class Event {
 
     @ManyToMany(mappedBy = "participatingEvents")
     Set<Dog> participantDogs;
+
+    @Override
+    public String toString() {
+        return "Event{" +
+                "date='" + this.date + '\'' +
+                '}';
+    }
+
 }
