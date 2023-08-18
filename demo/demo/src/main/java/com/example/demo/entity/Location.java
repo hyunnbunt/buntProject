@@ -11,7 +11,7 @@ public class Location {
     Long latitude;
     @Column(nullable = false)
     Long longitude;
-    @ManyToOne
+    @ManyToMany
     @JoinColumn(nullable = false)
     Dog dog;
 }
