@@ -38,6 +38,8 @@ public class Dog {
     Set<Event> organizingEvents;
     @ManyToMany
     Set<Event> participatingEvents;
+    @ManyToMany
+    Set<Location> walkLocations;
 
     public boolean patch(Dog newDog) {
         if (newDog.owner == null && newDog.name == null && newDog.age == null && newDog.weight == null && newDog.sex == null) {

@@ -2,6 +2,8 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 
+import java.util.Set;
+
 @Entity
 public class Location {
     @Id
@@ -11,7 +13,6 @@ public class Location {
     Long latitude;
     @Column(nullable = false)
     Long longitude;
-    @ManyToMany
-    @JoinColumn(nullable = false)
-    Dog dog;
+    @ManyToMany(mappedBy = "walkLocations")
+    Set<Dog> dogs;
 }

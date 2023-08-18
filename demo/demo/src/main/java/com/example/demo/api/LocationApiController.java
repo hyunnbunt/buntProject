@@ -19,13 +19,13 @@ public class LocationApiController {
         this.locationService = locationService;
     }
 
-    /** Add a new walk location. */
-    @PostMapping("location")
-    public ResponseEntity<Location> newLocation(@RequestBody LocationDto locationDto) {
-        Location newLocation = locationService.newLocation(locationDto);
-        return (newLocation != null) ?
-            ResponseEntity.status(HttpStatus.OK).body(newLocation):
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-    }
+//    /** Add a new walk location. */
+//    @PostMapping("location")
+//    public ResponseEntity<Location> newLocation(@RequestBody LocationDto locationDto) {
+//        Location newLocation = locationService.newLocation(locationDto);
+//        return (newLocation != null) ?
+//            ResponseEntity.status(HttpStatus.OK).body(newLocation):
+//                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+//    }
 
 }
