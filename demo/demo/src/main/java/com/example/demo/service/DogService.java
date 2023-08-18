@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.HashSet;
 import java.util.List;
@@ -90,28 +91,21 @@ public class DogService {
         return DogProfileDto.fromEntity(target);
     }
 
-    public DogEventUpdateDto joinEvent(@PathVariable Long dogId, @PathVariable Long eventId) {
-        Event targetEvent = eventRepository.findById(eventId).orElse(null);
-        if (targetEvent == null || !eventId.equals(targetEvent.getId())) {
+    public DogProfileDto joinEvent(@RequestBody DogEventUpdateDto dogEventUpdateDto) {
+        Event targetEvent = eventRepository.findById(dogEventUpdateDto.getDogId()).orElse(null);
+        // Validation check for the targetEvent.
+        if (targetEvent == null) {
             return null;
         }
-        Dog targetDog = dogRepository.findById(dogId).orElse(null);
-        if (targetDog == null || !dogId.equals(targetDog.getId())) {
+        Dog targetDog = dogRepository.findById(dogEventUpdateDto.getParticipatingEventId()).orElse(null);
+        // Validation check for the targetDog.
+        if (targetDog == null) {
             return null;
         }
         if (!targetDog.addEvent(targetEvent)) {
             return null;
         }
-        DogEventUpdateDto dogEventUpdateDto = new DogEventUpdateDto();
-        dogEventUpdateDto.setDogId(targetDog.getId());
-        if (targetDog.getParticipatingEvents().contains(targetEvent)) {
-            log.info("contains");
-            dogEventUpdateDto.setParticipatingEventId(targetEvent.getId());
-        } else {
-            throw new IllegalArgumentException();
-        }
-        dogRepository.save(targetDog);
-        log.info(dogRepository.findById(dogId).orElse(null).getParticipatingEvents().toString());
-        return dogEventUpdateDto;
+        Dog updated = dogRepository.save(targetDog);
+        return DogProfileDto.fromEntity(updated);
     }
 }

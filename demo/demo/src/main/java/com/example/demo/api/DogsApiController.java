@@ -16,46 +16,48 @@ import java.util.List;
 @RestController
 public class DogsApiController {
     private DogService dogService;
+    /** DI using constructor. */
     @Autowired
     public DogsApiController(DogService dogService) {
         this.dogService = dogService;
     }
+
+    /** Show all dogs (nearby). */
     @GetMapping("dogs")
     public List<DogProfileDto> showDogs() {
         return dogService.showDogs();
     }
 
+    /** Show a dog's profile. */
     @GetMapping("dogs/{id}")
     public DogProfileDto showDogProfile(@PathVariable Long id) {
         return dogService.showDogProfile(id);
     }
 
+    /** Register a new dog profile. */
     @PostMapping("dogs")
     public ResponseEntity<DogProfileDto> createDog(@RequestBody DogProfileDto dogProfileDto) {
        DogProfileDto createdDogProfileDto = dogService.createDog(dogProfileDto);
+        // createDog method in DogService would return null if the id's given in the request body.
        return (createdDogProfileDto != null) ?
             ResponseEntity.status(HttpStatus.OK).body(createdDogProfileDto):
                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-
-        // 이미 dogService에서 성공적으로 db에 저장해서 반환한 entity가 null이 될 수 있나?
-        // 될 수 있다. db에 저장 요청을 받아서 성공적으로 리턴은 받았어도, db에서 어떠한 에러가 있었으면
-        // repository에서 null을 리턴한다.
-        // 그렇다고 해도 왜 HttpStatus 코드가 왜 Bad request인지?
     }
 
-
-    /** Updates only basic fields of a dog's profile. Can't update organizing/participating events.  */
+    /** Update some basic fields of a dog's profile. Can't update organizing/participating events. */
     @PatchMapping("dogs/{id}")
     public ResponseEntity<DogUpdateDto> updateDog(@PathVariable Long id, @RequestBody DogUpdateDto dogUpdateDto) {
         DogUpdateDto updatedDogDto = dogService.updateDog(id, dogUpdateDto);
+        // updateDog method in DogService would return null if the given @PathVariable id's wrong or different from @RequestBody id.
         return (updatedDogDto != null) ?
             ResponseEntity.status(HttpStatus.OK).body(updatedDogDto):
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    @PatchMapping(value = {"dogs/{dogId}/{eventId}"})
-    public ResponseEntity<DogEventUpdateDto> joinEvent(@PathVariable Long dogId, @PathVariable Long eventId) {
-        DogEventUpdateDto eventUpdatedDogDto = dogService.joinEvent(dogId, eventId);
+    /** A dog joins an event. */
+    @PatchMapping("dog-event-participation")
+    public ResponseEntity<DogProfileDto> joinEvent(@RequestBody DogEventUpdateDto dogEventUpdateDto) {
+        DogProfileDto eventUpdatedDogDto = dogService.joinEvent(dogEventUpdateDto);
         return (eventUpdatedDogDto != null) ?
                 ResponseEntity.status(HttpStatus.OK).body(eventUpdatedDogDto):
                     ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

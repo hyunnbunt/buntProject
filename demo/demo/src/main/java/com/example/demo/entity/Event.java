@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,6 +27,14 @@ public class Event {
     @Column(nullable = false)
     Long longitude;
 
+    @ManyToOne(optional = true)
+    @JoinColumn // (nullable = false)
+    Dog organizerDog;
+
+    @ManyToMany(mappedBy = "participatingEvents")
+    @JsonIgnore
+    Set<Dog> participantDogs;
+
     public Event(Long id, Long date, Long time, Long latitude, Long longitude) {
         this.id = id;
         this.date = date;
@@ -34,12 +43,6 @@ public class Event {
         this.longitude = longitude;
     }
 
-    @ManyToOne(optional = true)
-    @JoinColumn // (nullable = false)
-    Dog organizerDog;
-
-    @ManyToMany(mappedBy = "participatingEvents")
-    Set<Dog> participantDogs;
 
     @Override
     public String toString() {
