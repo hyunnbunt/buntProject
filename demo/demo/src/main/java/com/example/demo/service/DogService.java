@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.DogEventUpdateDto;
+import com.example.demo.dto.DogFriendsNameDto;
 import com.example.demo.dto.DogProfileDto;
 import com.example.demo.dto.DogUpdateDto;
 import com.example.demo.entity.Dog;
@@ -112,5 +113,21 @@ public class DogService {
     public List<Dog> showFriends(@PathVariable Long dogId) {
         Dog dog = dogRepository.findById(dogId).orElse(null);
         return dog.getFriends();
+    }
+
+    public DogFriendsNameDto makeFriends(@PathVariable Long dogId, @RequestBody Long friendId) {
+        Dog dog = dogRepository.findById(dogId).orElse(null);
+        Dog friend = dogRepository.findById(friendId).orElse(null);
+        if (dog == null || friend == null) {
+            return null;
+        }
+        if (dog.getFriends().contains(friend)) {
+            return null;
+        }
+        dog.getFriends().add(friend);
+        dogRepository.save(dog);
+        friend.getFriends().add(dog);
+        dogRepository.save(friend);
+        return DogFriendsNameDto.fromEntity(friend);
     }
 }
