@@ -30,8 +30,12 @@ public class DogsApiController {
 
     /** Show a dog's profile. */
     @GetMapping("dogs/{id}")
-    public DogProfileDto showDogProfile(@PathVariable Long id) {
-        return dogService.showDogProfile(id);
+    public ResponseEntity<DogProfileDto> showDogProfile(@PathVariable Long id) {
+        try {
+           return ResponseEntity.status(HttpStatus.OK).body(dogService.showDogProfile(id));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     /** Register a new dog profile. */

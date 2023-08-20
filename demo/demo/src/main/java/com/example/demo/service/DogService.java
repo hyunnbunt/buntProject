@@ -15,10 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,19 +44,17 @@ public class DogService {
         return dogProfileDtoList;
     }
 
-    public DogProfileDto showDogProfile(@PathVariable Long id) {
+    public DogProfileDto showDogProfile(@PathVariable Long id) throws NoSuchElementException {
         Dog dog = dogRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("없는 강아지")
+                () -> new NoSuchElementException("Wrong id.")
         );
         return DogProfileDto.fromEntity(dog);
     }
 
     @Transactional
-    public DogProfileDto createDog(DogProfileDto dogProfileDto) {
-        // 홍팍쌤은 entity레벨에서 id를 조회했는데, 내 생각에는 미리 조회하는 게 더 좋을 것 같다.
-        // 차이가 있는지?
+    public DogProfileDto createDog(DogProfileDto dogProfileDto) throws IllegalArgumentException {
         if (dogProfileDto.getId() != null) {
-            return null;
+            throw new IllegalArgumentException("id can't be given.");
         }
         Dog newDog = dogProfileDto.toEntity(ownerService);
         dogRepository.save(newDog);
