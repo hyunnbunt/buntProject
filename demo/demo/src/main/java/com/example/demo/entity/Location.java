@@ -1,11 +1,13 @@
 package com.example.demo.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @NoArgsConstructor
@@ -20,7 +22,18 @@ public class Location {
     Long latitude;
     @Column(nullable = false)
     Long longitude;
-    @ManyToMany(mappedBy = "walkLocations")
-    @JsonIgnore
-    Set<Dog> dogs;
+    @ManyToMany
+    Set<Dog> walkingDogs;
+
+    public boolean addWalkingDog(Dog dog) {
+        if (this.walkingDogs == null) {
+            this.walkingDogs = new HashSet();
+        }
+        if (walkingDogs.contains(dog)) {
+            return false;
+        }
+        walkingDogs.add(dog);
+        return true;
+    }
+
 }

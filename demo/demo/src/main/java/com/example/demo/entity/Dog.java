@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -32,14 +33,15 @@ public class Dog {
     @Column
     String sex;
     @ManyToMany
-    Set<Dog> friends;
+    List<Dog> friends;
     @Column
     Integer happinessPoints;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "organizerDog", cascade = CascadeType.REMOVE)
     Set<Event> organizingEvents;
     @ManyToMany
     Set<Event> participatingEvents;
-    @ManyToMany
+    @ManyToMany(mappedBy = "walkingDogs")
+    @JsonIgnore
     Set<Location> walkLocations;
 
     public boolean patch(Dog newDog) {

@@ -108,4 +108,9 @@ public class DogService {
         Dog updated = dogRepository.save(targetDog);
         return DogProfileDto.fromEntity(updated);
     }
+
+    public List<Dog> showFriends(@PathVariable Long dogId) {
+        Dog dog = dogRepository.findById(dogId).orElse(null);
+        return dog.getFriends();
+    }
 }
