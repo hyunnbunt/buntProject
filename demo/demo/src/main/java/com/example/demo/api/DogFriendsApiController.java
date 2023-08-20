@@ -31,11 +31,19 @@ public class DogFriendsApiController {
     }
 
     /** Make friends for two dogs. */
-    @PostMapping("dogs/{dogId}/makeNewFriend")
-    public ResponseEntity<DogFriendsNameDto> makeFriends(@PathVariable Long dogId, @RequestBody Long friendsId) {
-        DogFriendsNameDto newFriend = dogService.makeFriends(dogId, friendsId);
+    @PostMapping("dogs/{dogId}/make-new-friend")
+    public ResponseEntity<DogFriendsNameDto> makeFriends(@PathVariable Long dogId, @RequestBody Long friendId) {
+        DogFriendsNameDto newFriend = dogService.makeFriends(dogId, friendId);
         return (!(newFriend == null)) ?
                 ResponseEntity.status(HttpStatus.OK).body(newFriend):
+                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    @PatchMapping("dogs/{dogId}/cancel-friend")
+    public ResponseEntity<DogFriendsNameDto> cancelFriends(@PathVariable Long dogId, @RequestBody Long friendId) {
+        DogFriendsNameDto cancelled = dogService.cancelFriends(dogId, friendId);
+        return (!(cancelled == null))?
+                ResponseEntity.status(HttpStatus.OK).body(cancelled):
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }

@@ -39,9 +39,7 @@ public class DogService {
 
 
     public List<DogProfileDto> showDogs() {
-
         List<Dog> dogList = dogRepository.findAll();
-
         List<DogProfileDto> dogProfileDtoList =
                 dogList.stream()
                 .map(dog -> DogProfileDto.fromEntity(dog))
@@ -129,5 +127,18 @@ public class DogService {
         friend.getFriends().add(dog);
         dogRepository.save(friend);
         return DogFriendsNameDto.fromEntity(friend);
+    }
+
+    public DogFriendsNameDto cancelFriends(@PathVariable Long dogId, @RequestBody Long friendId) {
+        Dog dog = dogRepository.findById(dogId).orElse(null);
+        Dog friend = dogRepository.findById(friendId).orElse(null);
+        if (dog == null || friend == null) {
+            return null;
+        }
+        if (!dog.getFriends().remove(friend)) {
+            return null;
+        }
+        dogRepository.save(dog);
+        return DogFriendsNameDto.fromEntity(dogRepository.save(friend));
     }
 }
