@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @RestController
@@ -33,7 +34,7 @@ public class DogsApiController {
     public ResponseEntity<DogProfileDto> showDogProfile(@PathVariable Long id) {
         try {
            return ResponseEntity.status(HttpStatus.OK).body(dogService.showDogProfile(id));
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
