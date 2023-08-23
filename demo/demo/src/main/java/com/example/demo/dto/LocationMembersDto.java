@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -14,11 +15,11 @@ import java.util.stream.Collectors;
 @Getter
 public class LocationMembersDto {
     Long id;
-    Long latitude;
-    Long longitude;
-    Set<Long> dogIds;
+    Double latitude;
+    Double longitude;
+    List<Long> dogIds;
 
-    public static LocationMembersDto fromEntity(Location updatedLocation, Set<Long> dogIds) {
+    public static LocationMembersDto fromEntity(Location updatedLocation, List<Long> dogIds) {
         LocationMembersDto locationMembersDto = new LocationMembersDto();
         locationMembersDto.setId(updatedLocation.getId());
         locationMembersDto.setLatitude(updatedLocation.getLatitude());
@@ -32,9 +33,9 @@ public class LocationMembersDto {
         locationMembersDto.setId(updatedLocation.getId());
         locationMembersDto.setLatitude(updatedLocation.getLatitude());
         locationMembersDto.setLongitude(updatedLocation.getLongitude());
-        Set<Dog> dogs = updatedLocation.getWalkingDogs();
-        Set<Long> dogIds =
-                dogs.stream().map(dog -> dog.getId()).collect(Collectors.toSet());
+        List<Dog> dogs = updatedLocation.getWalkingDogs();
+        List<Long> dogIds =
+                dogs.stream().map(dog -> dog.getId()).collect(Collectors.toList());
         locationMembersDto.setDogIds(dogIds);
         return locationMembersDto;
     }

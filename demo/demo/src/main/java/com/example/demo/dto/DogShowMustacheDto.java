@@ -14,8 +14,8 @@ public class DogShowMustacheDto {
     Long id;
     String dogsOwnerName;
     String name;
-    Integer age;
-    Long weight;
+    Double age;
+    Double weight;
     String sex;
     static OwnerService ownerService;
 

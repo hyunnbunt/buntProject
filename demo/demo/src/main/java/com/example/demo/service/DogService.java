@@ -10,6 +10,7 @@ import com.example.demo.repository.DogRepository;
 import com.example.demo.repository.EventRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,19 +35,16 @@ public class DogService {
         this.eventRepository = eventRepository;
     }
 
-
     public List<DogProfileDto> showDogs() {
         List<Dog> dogList = dogRepository.findAll();
-        List<DogProfileDto> dogProfileDtoList =
-                dogList.stream()
-                .map(dog -> DogProfileDto.fromEntity(dog))
+        return dogList.stream()
+                .map(DogProfileDto::fromEntity)
                 .collect(Collectors.toList());
-        return dogProfileDtoList;
     }
 
     public DogProfileDto showDogProfile(@PathVariable Long id) throws NoSuchElementException {
         Dog dog = dogRepository.findById(id).orElseThrow(
-                () -> new NoSuchElementException("Wrong id.")
+                () -> new NoSuchElementException("Can't find the dog.")
         );
         return DogProfileDto.fromEntity(dog);
     }
@@ -54,7 +52,7 @@ public class DogService {
     @Transactional
     public DogProfileDto createDog(DogProfileDto dogProfileDto) throws IllegalArgumentException {
         if (dogProfileDto.getId() != null) {
-            throw new IllegalArgumentException("id can't be given.");
+            throw new IllegalArgumentException("Id should be null.");
         }
         Dog newDog = dogProfileDto.toEntity(ownerService);
         dogRepository.save(newDog);
@@ -62,60 +60,60 @@ public class DogService {
     }
 
     @Transactional
-    public DogUpdateDto updateDog(@PathVariable Long id, DogUpdateDto dogUpdateDto) {
-        Dog newDog = dogUpdateDto.toEntity();
+    public DogUpdateDto updateDog(@PathVariable Long id, @RequestBody DogUpdateDto dogUpdateDto) throws IllegalArgumentException {
         Dog target = dogRepository.findById(id).orElse(null);
         if (target == null || !id.equals(target.getId())) {
-            return null;
+            throw new IllegalArgumentException("Can't find the dog.");
         }
-        if (!target.patch(newDog)) {
-            return null;
-        }
+        Dog newDog = dogUpdateDto.toEntity();
+        // 'patch' throws and exception.
+        target.patch(newDog);
         dogRepository.save(target);
         return DogUpdateDto.fromEntity(target);
     }
 
     @Transactional
-    public DogProfileDto deleteDog(@PathVariable Long id) {
+    public DogProfileDto deleteDog(@PathVariable Long id) throws NoSuchElementException {
         Dog target = dogRepository.findById(id).orElse(null);
         if (target == null) {
-            return null;
+            throw new NoSuchElementException("Can't find the dog.");
         }
         dogRepository.delete(target);
         return DogProfileDto.fromEntity(target);
     }
 
-    public DogProfileDto joinEvent(@RequestBody DogEventUpdateDto dogEventUpdateDto) {
-        Event targetEvent = eventRepository.findById(dogEventUpdateDto.getDogId()).orElse(null);
-        // Validation check for the targetEvent.
-        if (targetEvent == null) {
-            return null;
-        }
-        Dog targetDog = dogRepository.findById(dogEventUpdateDto.getParticipatingEventId()).orElse(null);
-        // Validation check for the targetDog.
-        if (targetDog == null) {
-            return null;
-        }
+    @Transactional
+    public DogProfileDto joinEvent(@RequestBody DogEventUpdateDto dogEventUpdateDto) throws NoSuchElementException, IllegalArgumentException {
+        Dog targetDog = dogRepository.findById(dogEventUpdateDto.getDogId()).orElseThrow(
+                () -> new NoSuchElementException("Can't find the dog."));
+        Event targetEvent = eventRepository.findById(dogEventUpdateDto.getParticipatingEventId()).orElseThrow(
+                () -> new NoSuchElementException("Can't find the event."));
         if (!targetDog.addEvent(targetEvent)) {
-            return null;
+            throw new IllegalArgumentException("The dog is already participating the event.");
         }
         Dog updated = dogRepository.save(targetDog);
         return DogProfileDto.fromEntity(updated);
     }
 
-    public List<Dog> showFriends(@PathVariable Long dogId) {
-        Dog dog = dogRepository.findById(dogId).orElse(null);
-        return dog.getFriends();
+    @Transactional
+    public List<DogFriendsNameDto> showFriends(@PathVariable Long dogId) {
+        Dog dog = dogRepository.findById(dogId).orElseThrow(
+                () -> new NoSuchElementException("Can't find the dog.")
+        );
+        return dog.getFriends().stream()
+                        .map(DogFriendsNameDto::fromEntity)
+                        .collect(Collectors.toList());
     }
 
-    public DogFriendsNameDto makeFriends(@PathVariable Long dogId, @RequestBody Long friendId) {
+    @Transactional
+    public DogFriendsNameDto makeFriends(@PathVariable Long dogId, @RequestBody Long friendId) throws NoSuchElementException, IllegalArgumentException {
         Dog dog = dogRepository.findById(dogId).orElse(null);
         Dog friend = dogRepository.findById(friendId).orElse(null);
         if (dog == null || friend == null) {
-            return null;
+            throw new NoSuchElementException("Can't find thd dog.");
         }
         if (dog.getFriends().contains(friend)) {
-            return null;
+            throw new IllegalArgumentException("The dogs are already friends.");
         }
         dog.getFriends().add(friend);
         dogRepository.save(dog);
@@ -124,14 +122,15 @@ public class DogService {
         return DogFriendsNameDto.fromEntity(friend);
     }
 
-    public DogFriendsNameDto cancelFriends(@PathVariable Long dogId, @RequestBody Long friendId) {
+    @Transactional
+    public DogFriendsNameDto cancelFriends(@PathVariable Long dogId, @RequestBody Long friendId) throws NoSuchElementException, IllegalArgumentException {
         Dog dog = dogRepository.findById(dogId).orElse(null);
         Dog friend = dogRepository.findById(friendId).orElse(null);
         if (dog == null || friend == null) {
-            return null;
+            throw new NoSuchElementException("Can't find thd dog.");
         }
-        if (!dog.getFriends().remove(friend)) {
-            return null;
+        if (!dog.getFriends().remove(friend) || !(friend.getFriends().remove(dog))) {
+            throw new IllegalArgumentException("The dogs are already not friends.");
         }
         dogRepository.save(dog);
         return DogFriendsNameDto.fromEntity(dogRepository.save(friend));

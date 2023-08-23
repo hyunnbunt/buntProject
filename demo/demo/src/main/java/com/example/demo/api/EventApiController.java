@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @Slf4j
@@ -26,8 +27,13 @@ public class EventApiController {
     }
 
     @GetMapping("/events/{id}")
-    public EventDto showEventDetail(@PathVariable Long id) {
-        return eventService.showEventDetail(id);
+    public ResponseEntity<EventDto> showEventDetail(@PathVariable Long id) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(eventService.showEventDetail(id));
+        } catch (NoSuchElementException e) {
+            log.info(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     @PostMapping("/events")

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,47 +38,47 @@ public class LocationService {
     }
 
     /** Show a detail of a location. */
-    public Location showLocationsDetail(Long locationId) {
-        Location location = locationRepository.findById(locationId).orElse(null);
-        if (location == null) {
-            return null;
-        }
-        return location;
+    public Location showLocationsDetail(Long locationId) throws NoSuchElementException {
+        return locationRepository.findById(locationId).orElseThrow(
+                () -> new NoSuchElementException("Can't find the location. Wrong id.")
+        );
     }
 
     /** Add a new walk location of a dog. */
-    public LocationCreateDto createLocation(@RequestBody LocationCreateDto locationCreateDto) {
+    public LocationCreateDto createLocation(@RequestBody LocationCreateDto locationCreateDto) throws NoSuchElementException, IllegalArgumentException {
         Location location = locationCreateDto.toEntity();
         if (location.getId() != null) {
-            return null;
+            throw new IllegalArgumentException("Id must be null.");
         }
         Long creatorDogId = locationCreateDto.getCreatorDogId();
-        Dog creatorDog = dogRepository.findById(creatorDogId).orElse(null);
-        if (creatorDog == null) {
-            return null;
+        if (creatorDogId == null) {
+            throw new IllegalArgumentException("Can't find the dog. Id is null.");
         }
+        Dog creatorDog = dogRepository.findById(creatorDogId).orElseThrow(
+                () -> new IllegalArgumentException("Can't find the dog. Wrong id.")
+        );
         if (!location.addWalkingDog(creatorDog)) {
-            return null;
+            throw new IllegalArgumentException("Your dog already added this walking location.");
         }
         Location createdLocation = locationRepository.save(location);
         return LocationCreateDto.fromEntity(createdLocation, creatorDogId);
     }
 
-    public LocationMembersDto joinLocation(@PathVariable Long locationId, @RequestBody Long dogId) {
+    public LocationMembersDto joinLocation(@PathVariable Long locationId, @RequestBody Long dogId) throws NoSuchElementException, IllegalArgumentException {
         Location targetLocation = locationRepository.findById(locationId).orElse(null);
         if (targetLocation == null) {
-            return null;
+            throw new NoSuchElementException("Can't find the location. Wrong id.");
         }
         Dog dog = dogRepository.findById(dogId).orElse(null);
         if (dog == null) {
-            return null;
+            throw new NoSuchElementException("Can't find the dog. Wrong id.");
         }
         if (!targetLocation.addWalkingDog(dog)) {
-            return null;
+            throw new IllegalArgumentException("Your dog already added this walking location.");
         }
         Location updatedLocation = locationRepository.save(targetLocation);
-        Set<Long> dogIds = updatedLocation.getWalkingDogs().stream().map(eachDog -> eachDog.getId())
-                .collect(Collectors.toSet());
+        List<Long> dogIds = updatedLocation.getWalkingDogs().stream().map(Dog::getId)
+                .collect(Collectors.toList());
         return LocationMembersDto.fromEntity(updatedLocation, dogIds);
     }
 

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class EventService {
@@ -24,17 +25,16 @@ public class EventService {
         return eventDtoList;
     }
 
-    public EventDto showEventDetail(@PathVariable Long id) {
-        Event event = eventRepository.findById(id).orElse(null);
-        if (event == null) {
-            throw new IllegalArgumentException("이벤트가 존재하지 않습니다.");
-        }
+    public EventDto showEventDetail(@PathVariable Long id) throws NoSuchElementException {
+        Event event = eventRepository.findById(id).orElseThrow(
+                () -> new NoSuchElementException("Wrong id.")
+        );
         return EventDto.fromEntity(event);
     }
 
-    public EventDto createEvent(EventDto eventDto) {
+    public EventDto createEvent(EventDto eventDto) throws IllegalArgumentException {
         if (eventDto.getId() != null) {
-            throw new IllegalArgumentException("잘못된 요청 : 이벤트 id가 지정되지 않아야 합니다.");
+            throw new IllegalArgumentException("Id should be null.");
         }
         Event createdEvent = eventRepository.save(eventDto.toEntity());
         return EventDto.fromEntity(createdEvent);

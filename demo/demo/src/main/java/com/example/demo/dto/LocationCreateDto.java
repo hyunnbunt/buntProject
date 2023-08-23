@@ -13,8 +13,8 @@ import java.util.Set;
 @Setter
 public class LocationCreateDto {
     Long id;
-    Long latitude;
-    Long longitude;
+    Double latitude;
+    Double longitude;
     Long creatorDogId;
 
     public static LocationCreateDto fromEntity(Location createdLocation, Long creatorDogId) {

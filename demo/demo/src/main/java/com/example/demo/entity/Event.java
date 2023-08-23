@@ -23,9 +23,9 @@ public class Event {
     @Column(nullable = false)
     Long time;
     @Column(nullable = false)
-    Long latitude;
+    Double latitude;
     @Column(nullable = false)
-    Long longitude;
+    Double longitude;
 
     @ManyToOne(optional = true)
     @JoinColumn // (nullable = false)
@@ -35,7 +35,7 @@ public class Event {
     @JsonIgnore
     Set<Dog> participantDogs;
 
-    public Event(Long id, Long date, Long time, Long latitude, Long longitude) {
+    public Event(Long id, Long date, Long time, Double latitude, Double longitude) {
         this.id = id;
         this.date = date;
         this.time = time;

@@ -1,19 +1,21 @@
 package com.example.demo.dto;
 
 import com.example.demo.entity.Dog;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Setter
 @Getter
 public class DogUpdateDto {
 
     Long id;
     String name;
-    Integer age;
-    Long weight;
+    Double age;
+    Double weight;
     String sex;
 
     public Dog toEntity() {
@@ -36,4 +38,14 @@ public class DogUpdateDto {
         return dogUpdateDto;
     }
 
+    @Override
+    public String toString() {
+        return "DogUpdateDto{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", age=" + age +
+                ", weight=" + weight +
+                ", sex='" + sex + '\'' +
+                '}';
+    }
 }

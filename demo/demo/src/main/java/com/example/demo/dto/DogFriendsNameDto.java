@@ -16,4 +16,11 @@ public class DogFriendsNameDto {
     public static DogFriendsNameDto fromEntity(Dog dog) {
         return new DogFriendsNameDto(dog.getName());
     }
+
+    @Override
+    public String toString() {
+        return "DogFriendsNameDto{" +
+                "name='" + name + '\'' +
+                '}';
+    }
 }

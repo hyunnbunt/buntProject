@@ -15,11 +15,11 @@ import java.util.NoSuchElementException;
 
 @Slf4j
 @RestController
-public class DogsApiController {
+public class DogApiController {
     private DogService dogService;
     /** DI using constructor. */
     @Autowired
-    public DogsApiController(DogService dogService) {
+    public DogApiController(DogService dogService) {
         this.dogService = dogService;
     }
 
@@ -35,6 +35,7 @@ public class DogsApiController {
         try {
            return ResponseEntity.status(HttpStatus.OK).body(dogService.showDogProfile(id));
         } catch (NoSuchElementException e) {
+            log.info(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
@@ -42,37 +43,43 @@ public class DogsApiController {
     /** Register a new dog profile. */
     @PostMapping("dogs")
     public ResponseEntity<DogProfileDto> createDog(@RequestBody DogProfileDto dogProfileDto) {
-       DogProfileDto createdDogProfileDto = dogService.createDog(dogProfileDto);
-        // createDog method in DogService would return null if the id's given in the request body.
-       return (createdDogProfileDto != null) ?
-            ResponseEntity.status(HttpStatus.OK).body(createdDogProfileDto):
-               ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+       try {
+           return ResponseEntity.status(HttpStatus.OK).body(dogService.createDog(dogProfileDto));
+       } catch (IllegalArgumentException e) {
+           log.info(e.getMessage());
+           return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+       }
     }
 
     /** Update some basic fields of a dog's profile. Can't update organizing/participating events. */
     @PatchMapping("dogs/{id}")
     public ResponseEntity<DogUpdateDto> updateDog(@PathVariable Long id, @RequestBody DogUpdateDto dogUpdateDto) {
-        DogUpdateDto updatedDogDto = dogService.updateDog(id, dogUpdateDto);
-        // updateDog method in DogService would return null if the given @PathVariable id's wrong or different from @RequestBody id.
-        return (updatedDogDto != null) ?
-            ResponseEntity.status(HttpStatus.OK).body(updatedDogDto):
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(dogService.updateDog(id, dogUpdateDto));
+        } catch (IllegalArgumentException e) {
+            log.info(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+    /** Delete a dog's profile. */
+    @DeleteMapping("dogs/{id}")
+    public ResponseEntity<DogProfileDto> deleteDog(@PathVariable Long id) {
+        try {
+            return  ResponseEntity.status(HttpStatus.OK).body(dogService.deleteDog(id));
+        } catch (NoSuchElementException e) {
+            log.info(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     /** A dog joins an event. */
     @PatchMapping("dog-event-participation")
     public ResponseEntity<DogProfileDto> joinEvent(@RequestBody DogEventUpdateDto dogEventUpdateDto) {
-        DogProfileDto eventUpdatedDogDto = dogService.joinEvent(dogEventUpdateDto);
-        return (eventUpdatedDogDto != null) ?
-                ResponseEntity.status(HttpStatus.OK).body(eventUpdatedDogDto):
-                    ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-    }
-
-    @DeleteMapping("dogs/{id}")
-    public ResponseEntity<DogProfileDto> deleteDog(@PathVariable Long id) {
-        DogProfileDto deletedDogProfileDto = dogService.deleteDog(id);
-        return (deletedDogProfileDto != null) ?
-            ResponseEntity.status(HttpStatus.OK).body(deletedDogProfileDto):
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(dogService.joinEvent(dogEventUpdateDto));
+        } catch (NoSuchElementException | IllegalArgumentException e) {
+            log.info(e.getMessage());
+            return  ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 }

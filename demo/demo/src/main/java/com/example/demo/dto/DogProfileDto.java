@@ -4,35 +4,54 @@ import com.example.demo.entity.Dog;
 import com.example.demo.entity.Event;
 import com.example.demo.entity.Owner;
 import com.example.demo.service.OwnerService;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.Set;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Setter
 @Getter
 public class DogProfileDto {
     Long id;
     Long dogsOwnerId;
     String name;
-    Integer age;
-    Long weight;
+    Double age;
+    Double weight;
     String sex;
-    Set<Event> participatingEvents;
+    List<Event> participatingEvents;
 
-    public Dog toEntity(OwnerService ownerService) {
+    public DogProfileDto(Long dogsOwnerId, String name, Double age, Double weight, String sex) {
+        this.dogsOwnerId = dogsOwnerId;
+        this.name = name;
+        this.age = age;
+        this.weight = weight;
+        this.sex = sex;
+    }
+
+    @Override
+    public String toString() {
+        return "DogProfileDto{" +
+                "dogsOwnerId=" + this.dogsOwnerId +
+                ", name='" + this.name + '\'' +
+                ", age=" + this.age +
+                ", weight=" + this.weight +
+                ", sex='" + this.sex + '\'';
+    }
+
+    public Dog toEntity(OwnerService ownerService) throws IllegalArgumentException {
         Dog dogEntity = new Dog();
-        // toEntity를 부른 메소드에서
-        if (dogsOwnerId == null) {
-            throw new IllegalArgumentException("보호자 id가 누락되었습니다.");
+        if (this.dogsOwnerId == null) {
+            throw new IllegalArgumentException("Owner id is required.");
         }
-        Owner dogsOwner = ownerService.getOwnerEntity(dogsOwnerId);
-        // dogsOwner shouldn't be null.
+        Owner dogsOwner = ownerService.getOwnerEntity(this.dogsOwnerId);
         if (dogsOwner == null) {
-            throw new IllegalArgumentException("보호자 id가 잘못되었습니다.");
+            throw new IllegalArgumentException("Can't find the owner.");
         }
         dogEntity.setId(this.id);
         dogEntity.setOwner(dogsOwner);
