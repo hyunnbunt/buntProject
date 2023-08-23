@@ -4,6 +4,7 @@ import com.example.demo.dto.DogEventUpdateDto;
 import com.example.demo.dto.DogProfileDto;
 import com.example.demo.dto.DogUpdateDto;
 import com.example.demo.service.DogService;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

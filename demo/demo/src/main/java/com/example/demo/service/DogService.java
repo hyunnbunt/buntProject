@@ -126,11 +126,12 @@ public class DogService {
 
     @Transactional
     public DogFriendsNameDto cancelFriends(@PathVariable Long dogId, @RequestBody Long friendId) throws NoSuchElementException, IllegalArgumentException {
-        Dog dog = dogRepository.findById(dogId).orElse(null);
-        Dog friend = dogRepository.findById(friendId).orElse(null);
-        if (dog == null || friend == null) {
-            throw new NoSuchElementException("Can't find thd dog.");
-        }
+        Dog dog = dogRepository.findById(dogId).orElseThrow(
+                () -> new NoSuchElementException("Can't find thd dog.")
+        );
+        Dog friend = dogRepository.findById(friendId).orElseThrow(
+                () -> new NoSuchElementException("Can't find thd friend dog.")
+        );
         if (!dog.getFriends().remove(friend) || !(friend.getFriends().remove(dog))) {
             throw new IllegalArgumentException("The dogs are already not friends.");
         }
