@@ -1,7 +1,7 @@
 package com.example.demo.api;
 
 import com.example.demo.dto.DogEventUpdateDto;
-import com.example.demo.dto.DogProfileDto;
+import com.example.demo.dto.OwnersDogProfileDto;
 import com.example.demo.dto.DogUpdateDto;
 import com.example.demo.service.DogService;
 import lombok.extern.slf4j.Slf4j;
@@ -25,13 +25,13 @@ public class DogApiController {
 
     /** Show all dogs (nearby). */
     @GetMapping("dogs")
-    public List<DogProfileDto> showDogs() {
+    public List<OwnersDogProfileDto> showDogs() {
         return dogService.showDogs();
     }
 
     /** Show a dog's profile. */
     @GetMapping("dogs/{id}")
-    public ResponseEntity<DogProfileDto> showDogProfile(@PathVariable Long id) {
+    public ResponseEntity<OwnersDogProfileDto> showDogProfile(@PathVariable Long id) {
         try {
            return ResponseEntity.status(HttpStatus.OK).body(dogService.showDogProfile(id));
         } catch (NoSuchElementException e) {
@@ -42,7 +42,7 @@ public class DogApiController {
 
     /** Register a new dog profile. */
     @PostMapping("dogs")
-    public ResponseEntity<DogProfileDto> createDog(@RequestBody DogProfileDto dogProfileDto) {
+    public ResponseEntity<OwnersDogProfileDto> createDog(@RequestBody OwnersDogProfileDto dogProfileDto) {
        try {
            return ResponseEntity.status(HttpStatus.OK).body(dogService.createDog(dogProfileDto));
        } catch (IllegalArgumentException e) {
@@ -63,7 +63,7 @@ public class DogApiController {
     }
     /** Delete a dog's profile. */
     @DeleteMapping("dogs/{id}")
-    public ResponseEntity<DogProfileDto> deleteDog(@PathVariable Long id) {
+    public ResponseEntity<OwnersDogProfileDto> deleteDog(@PathVariable Long id) {
         try {
             return  ResponseEntity.status(HttpStatus.OK).body(dogService.deleteDog(id));
         } catch (NoSuchElementException e) {
@@ -74,7 +74,7 @@ public class DogApiController {
 
     /** A dog joins an event. */
     @PatchMapping("dog-event-participation")
-    public ResponseEntity<DogProfileDto> joinEvent(@RequestBody DogEventUpdateDto dogEventUpdateDto) {
+    public ResponseEntity<OwnersDogProfileDto> joinEvent(@RequestBody DogEventUpdateDto dogEventUpdateDto) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(dogService.joinEvent(dogEventUpdateDto));
         } catch (NoSuchElementException | IllegalArgumentException e) {

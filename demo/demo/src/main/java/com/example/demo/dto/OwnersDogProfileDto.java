@@ -8,16 +8,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
 @Getter
-public class DogProfileDto {
+public class OwnersDogProfileDto {
     Long id;
     Long dogsOwnerId;
     String name;
@@ -26,7 +24,7 @@ public class DogProfileDto {
     String sex;
     List<Event> participatingEvents;
 
-    public DogProfileDto(Long dogsOwnerId, String name, Double age, Double weight, String sex) {
+    public OwnersDogProfileDto(Long dogsOwnerId, String name, Double age, Double weight, String sex) {
         this.dogsOwnerId = dogsOwnerId;
         this.name = name;
         this.age = age;
@@ -65,8 +63,8 @@ public class DogProfileDto {
         return dogEntity;
     }
 
-    public static DogProfileDto fromEntity(Dog dog) {
-        DogProfileDto dogProfileDto = new DogProfileDto();
+    public static OwnersDogProfileDto fromEntity(Dog dog) {
+        OwnersDogProfileDto dogProfileDto = new OwnersDogProfileDto();
         dogProfileDto.setId(dog.getId());
         dogProfileDto.setDogsOwnerId(dog.getOwner().getId());
         dogProfileDto.setName(dog.getName());

@@ -23,7 +23,7 @@ public class DogShowMustacheDto {
     public DogShowMustacheDto(OwnerService ownerService) {
         DogShowMustacheDto.ownerService = ownerService;
     }
-    public static DogShowMustacheDto fromDogProfileDto(DogProfileDto dogProfileDto) {
+    public static DogShowMustacheDto fromDogProfileDto(OwnersDogProfileDto dogProfileDto) {
         Long dogsOwnerId = dogProfileDto.getDogsOwnerId();
         Owner owner = ownerService.getOwnerEntity(dogsOwnerId);
 

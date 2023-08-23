@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 
+import com.example.demo.dto.LocationListProfileDto;
 import com.example.demo.dto.LocationMembersDto;
 import com.example.demo.dto.LocationCreateDto;
 import com.example.demo.entity.Dog;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,15 +33,18 @@ public class LocationService {
 
 
     /** Show the list of locations. */
-    public List<Location> showLocationsList() {
-        return locationRepository.findAll();
+    public List<LocationListProfileDto> showLocationsList() {
+        log.info(Integer.toString(locationRepository.findAll().size()));
+        return locationRepository.findAll().stream().
+                map(LocationListProfileDto::fromEntity).collect(Collectors.toList());
     }
 
     /** Show a detail of a location. */
-    public Location showLocationsDetail(Long locationId) throws NoSuchElementException {
-        return locationRepository.findById(locationId).orElseThrow(
+    public LocationListProfileDto showLocationsDetail(Long locationId) throws NoSuchElementException {
+        Location location = locationRepository.findById(locationId).orElseThrow(
                 () -> new NoSuchElementException("Can't find the location. Wrong id.")
         );
+        return LocationListProfileDto.fromEntity(location);
     }
 
     /** Add a new walk location of a dog. */

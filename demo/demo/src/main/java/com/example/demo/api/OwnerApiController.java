@@ -1,10 +1,7 @@
 package com.example.demo.api;
 
-import com.example.demo.dto.DogProfileDto;
 import com.example.demo.dto.OwnerDto;
-import com.example.demo.entity.Owner;
 import com.example.demo.service.OwnerService;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

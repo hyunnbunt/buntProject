@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @NoArgsConstructor // Entity는 항상 defaul constructor가 필요
 @Getter
 @Setter
-@ToString
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +33,7 @@ public class Event {
 
     @ManyToMany(mappedBy = "participatingEvents")
     @JsonIgnore
-    Set<Dog> participantDogs;
+    List<Dog> participantDogs;
 
     public Event(Long id, Long date, Long time, Double latitude, Double longitude) {
         this.id = id;

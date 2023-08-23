@@ -1,6 +1,6 @@
 package com.example.demo.api;
 
-import com.example.demo.dto.DogProfileDto;
+import com.example.demo.dto.OwnersDogProfileDto;
 import com.example.demo.entity.Dog;
 import com.example.demo.service.DogService;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ class DogApiControllerTest {
         // expected
         List<Dog> expectedDogs = new ArrayList(Arrays.asList(a, b, c, d));
         // actual
-        List<DogProfileDto> dogs = dogService.showDogs();
+        List<OwnersDogProfileDto> dogs = dogService.showDogs();
 
         // compare
         assertEquals(expectedDogs.toString(), dogs.toString());

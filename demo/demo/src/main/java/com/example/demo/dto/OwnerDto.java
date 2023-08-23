@@ -6,7 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @Setter
@@ -15,6 +17,12 @@ import java.util.Set;
 public class OwnerDto {
     Long id;
     String name;
-    Set<DogProfileDto> dogs;
+    List<OwnersDogProfileDto> dogs;
     Long ownerPoints;
+
+    public static OwnerDto fromEntity(Owner owner) {
+        List<OwnersDogProfileDto> dogs =
+                owner.getDogs().stream().map(OwnersDogProfileDto::fromEntity).collect(Collectors.toList());
+        return new OwnerDto(owner.getId(), owner.getName(), dogs, owner.getOwnerPoints());
+    }
 }

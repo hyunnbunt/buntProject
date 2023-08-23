@@ -1,8 +1,8 @@
 package com.example.demo.api;
 
+import com.example.demo.dto.LocationListProfileDto;
 import com.example.demo.dto.LocationMembersDto;
 import com.example.demo.dto.LocationCreateDto;
-import com.example.demo.entity.Location;
 import com.example.demo.service.LocationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +27,13 @@ public class LocationApiController {
 
     /** Show the list of locations. */
     @GetMapping("locations")
-    public List<Location> showLocationsList() {
-        List<Location> locationsList = locationService.showLocationsList();
-        log.info(Integer.toString(locationsList.size()));
-        return locationsList;
+    public List<LocationListProfileDto> showLocationsList() {
+        return locationService.showLocationsList();
     }
 
     /** Show a location's detail. */
     @GetMapping("locations/{locationId}")
-    public ResponseEntity<Location> showLocationDetail(@PathVariable Long locationId) {
+    public ResponseEntity<LocationListProfileDto> showLocationDetail(@PathVariable Long locationId) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(locationService.showLocationsDetail(locationId));
         } catch (NoSuchElementException e) {

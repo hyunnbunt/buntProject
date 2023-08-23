@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.DogProfileDto;
+import com.example.demo.dto.OwnersDogProfileDto;
 import com.example.demo.dto.DogShowMustacheDto;
 import com.example.demo.service.DogService;
 import com.example.demo.service.OwnerService;
@@ -27,7 +27,7 @@ public class DogsController {
 
     @GetMapping("bunt-project/dogs")
     public String showDogs(Model model) {
-        List<DogProfileDto> dogs = dogService.showDogs();
+        List<OwnersDogProfileDto> dogs = dogService.showDogs();
         List<DogShowMustacheDto> dogShowMustacheDtos =
                 dogs.stream().map(dogProfileDto -> DogShowMustacheDto.fromDogProfileDto(dogProfileDto))
                                 .toList();
