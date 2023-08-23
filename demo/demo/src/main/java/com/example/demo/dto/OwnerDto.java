@@ -17,12 +17,12 @@ import java.util.stream.Collectors;
 public class OwnerDto {
     Long id;
     String name;
-    List<OwnersDogProfileDto> dogs;
+    Set<OwnersDogProfileDto> dogs;
     Long ownerPoints;
 
     public static OwnerDto fromEntity(Owner owner) {
-        List<OwnersDogProfileDto> dogs =
-                owner.getDogs().stream().map(OwnersDogProfileDto::fromEntity).collect(Collectors.toList());
+        Set<OwnersDogProfileDto> dogs =
+                owner.getDogs().stream().map(OwnersDogProfileDto::fromEntity).collect(Collectors.toSet());
         return new OwnerDto(owner.getId(), owner.getName(), dogs, owner.getOwnerPoints());
     }
 }

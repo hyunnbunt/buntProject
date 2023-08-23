@@ -2,7 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.dto.DogEventUpdateDto;
 import com.example.demo.dto.DogFriendsNameDto;
-import com.example.demo.dto.OwnersDogProfileDto;
+import com.example.demo.dto.DogProfileDto;
 import com.example.demo.dto.DogUpdateDto;
 import com.example.demo.entity.Event;
 import jakarta.transaction.Transactional;
@@ -35,30 +35,30 @@ class DogServiceTest {
 //        Owner owner4 = new Owner("Jiwook");
 //        Owner owner5 = new Owner("Chih");
 
-        OwnersDogProfileDto a = new OwnersDogProfileDto(1L, "Lana", 10d, 3D, "female");
-        OwnersDogProfileDto b = new OwnersDogProfileDto( 2L, "Bunt", 4D, 6.2D, "male");
-        OwnersDogProfileDto c = new OwnersDogProfileDto(3L, "Biscuit",  2D, 4.5d,"male");
-        OwnersDogProfileDto d = new OwnersDogProfileDto(4L, "Hatu", 3D,5.5D,  "male");
-        OwnersDogProfileDto e = new OwnersDogProfileDto(5L, "Latte", 3D,8D,  "male");
+        DogProfileDto a = new DogProfileDto(1L, "Lana", 10d, 3D, "female");
+        DogProfileDto b = new DogProfileDto( 2L, "Bunt", 4D, 6.2D, "male");
+        DogProfileDto c = new DogProfileDto(3L, "Biscuit",  2D, 4.5d,"male");
+        DogProfileDto d = new DogProfileDto(4L, "Hatu", 3D,5.5D,  "male");
+        DogProfileDto e = new DogProfileDto(5L, "Latte", 3D,8D,  "male");
         // LIst<DogProfileDto> 에 ArrayList<Dog> 을 어사인 했는데 왜 컴파일이 됐는지?
-        List<OwnersDogProfileDto> expected = new ArrayList(Arrays.asList(a, b, c, d, e));
-        List<OwnersDogProfileDto> actual = dogService.showDogs();
+        List<DogProfileDto> expected = new ArrayList(Arrays.asList(a, b, c, d, e));
+        List<DogProfileDto> actual = dogService.showDogs();
         assertEquals(expected.toString(), actual.toString());
     }
 
     @Test
     @Transactional
     void showDogProfile() {
-        OwnersDogProfileDto expected = new OwnersDogProfileDto(1L, "Lana",10D, 3d, "female");
-        OwnersDogProfileDto actual = dogService.showDogProfile(1L);
+        DogProfileDto expected = new DogProfileDto(1L, "Lana",10D, 3d, "female");
+        DogProfileDto actual = dogService.showDogProfile(1L);
         assertEquals(expected.toString(), actual.toString());
     }
 
     @Test
     @Transactional
     void createDog() {
-        OwnersDogProfileDto expected = new OwnersDogProfileDto(6L, "Dallae", 2D, 3D, "female");
-        OwnersDogProfileDto actual = dogService.createDog(expected);
+        DogProfileDto expected = new DogProfileDto(6L, "Dallae", 2D, 3D, "female");
+        DogProfileDto actual = dogService.createDog(expected);
         assertEquals(expected.toString(), actual.toString());
     }
 
@@ -79,16 +79,16 @@ class DogServiceTest {
         event.setTime(2050L);
         event.setLatitude(11.11D);
         event.setLongitude(55.16D);
-        OwnersDogProfileDto expected = new OwnersDogProfileDto(4L, 4L, "Hatu", 3D, 5.5D, "male", Lists.newArrayList(event));
-        OwnersDogProfileDto actual = dogService.deleteDog(4L);
+        DogProfileDto expected = new DogProfileDto(4L, 4L, "Hatu", 3D, 5.5D, "male", Lists.newArrayList(event));
+        DogProfileDto actual = dogService.deleteDog(4L);
         assertEquals(expected.toString(), actual.toString());
     }
 
     @Test
     @Transactional
     void joinEvent() {
-        OwnersDogProfileDto expected = new OwnersDogProfileDto(5L, "Latte", 3D, 8.0D, "male");
-        OwnersDogProfileDto actual = dogService.joinEvent(new DogEventUpdateDto(5L, 3L));
+        DogProfileDto expected = new DogProfileDto(5L, "Latte", 3D, 8.0D, "male");
+        DogProfileDto actual = dogService.joinEvent(new DogEventUpdateDto(5L, 3L));
         assertEquals(expected.toString(), actual.toString());
     }
 

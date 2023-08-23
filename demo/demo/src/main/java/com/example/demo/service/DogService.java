@@ -2,7 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.dto.DogEventUpdateDto;
 import com.example.demo.dto.DogFriendsNameDto;
-import com.example.demo.dto.OwnersDogProfileDto;
+import com.example.demo.dto.DogProfileDto;
 import com.example.demo.dto.DogUpdateDto;
 import com.example.demo.entity.Dog;
 import com.example.demo.entity.Event;
@@ -34,35 +34,38 @@ public class DogService {
         this.eventRepository = eventRepository;
     }
 
-    public List<OwnersDogProfileDto> showDogs() {
+    public List<DogProfileDto> showDogs() {
         List<Dog> dogList = dogRepository.findAll();
         return dogList.stream()
-                .map(OwnersDogProfileDto::fromEntity)
+                .map(DogProfileDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
-    public OwnersDogProfileDto showDogProfile(@PathVariable Long id) throws NoSuchElementException {
+    public DogProfileDto showDogProfile(@PathVariable Long id) throws NoSuchElementException {
         Dog dog = dogRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException("Can't find the dog.")
         );
-        return OwnersDogProfileDto.fromEntity(dog);
+        return DogProfileDto.fromEntity(dog);
     }
 
     @Transactional
-    public OwnersDogProfileDto createDog(OwnersDogProfileDto dogProfileDto) throws IllegalArgumentException {
+    public DogProfileDto createDog(DogProfileDto dogProfileDto) throws IllegalArgumentException {
         if (dogProfileDto.getId() != null) {
             throw new IllegalArgumentException("Id should be null.");
         }
         Dog newDog = dogProfileDto.toEntity(ownerService);
         dogRepository.save(newDog);
-        return OwnersDogProfileDto.fromEntity(newDog);
+        return DogProfileDto.fromEntity(newDog);
     }
 
     @Transactional
     public DogUpdateDto updateDog(@PathVariable Long id, @RequestBody DogUpdateDto dogUpdateDto) throws IllegalArgumentException {
         Dog target = dogRepository.findById(id).orElse(null);
-        if (target == null || !id.equals(target.getId())) {
-            throw new IllegalArgumentException("Can't find the dog.");
+        if (target == null) {
+            throw new IllegalArgumentException("Can't find the dog. Wrong id.");
+        }
+        if (dogUpdateDto.getId() != null && !dogUpdateDto.getId().equals(target.getId())) {
+            throw new IllegalArgumentException("Can't update the dog's id.");
         }
         Dog newDog = dogUpdateDto.toEntity();
         // 'patch' throws and exception.
@@ -72,17 +75,17 @@ public class DogService {
     }
 
     @Transactional
-    public OwnersDogProfileDto deleteDog(@PathVariable Long id) throws NoSuchElementException {
-        Dog target = dogRepository.findById(id).orElse(null);
-        if (target == null) {
-            throw new NoSuchElementException("Can't find the dog.");
-        }
+    public DogProfileDto deleteDog(@PathVariable Long id) throws NoSuchElementException {
+        Dog target = dogRepository.findById(id).orElseThrow(
+                () -> new NoSuchElementException("Can't find the dog.")
+        );
+        // target.emptyFriendsList();
         dogRepository.delete(target);
-        return OwnersDogProfileDto.fromEntity(target);
+        return DogProfileDto.fromEntity(target);
     }
 
     @Transactional
-    public OwnersDogProfileDto joinEvent(@RequestBody DogEventUpdateDto dogEventUpdateDto) throws NoSuchElementException, IllegalArgumentException {
+    public DogProfileDto joinEvent(@RequestBody DogEventUpdateDto dogEventUpdateDto) throws NoSuchElementException, IllegalArgumentException {
         Dog targetDog = dogRepository.findById(dogEventUpdateDto.getDogId()).orElseThrow(
                 () -> new NoSuchElementException("Can't find the dog."));
         Event targetEvent = eventRepository.findById(dogEventUpdateDto.getParticipatingEventId()).orElseThrow(
@@ -91,7 +94,7 @@ public class DogService {
             throw new IllegalArgumentException("The dog is already participating the event.");
         }
         Dog updated = dogRepository.save(targetDog);
-        return OwnersDogProfileDto.fromEntity(updated);
+        return DogProfileDto.fromEntity(updated);
     }
 
     @Transactional
@@ -134,4 +137,5 @@ public class DogService {
         dogRepository.save(dog);
         return DogFriendsNameDto.fromEntity(dogRepository.save(friend));
     }
+
 }

@@ -8,6 +8,7 @@ import com.example.demo.entity.Dog;
 import com.example.demo.entity.Location;
 import com.example.demo.repository.DogRepository;
 import com.example.demo.repository.LocationRepository;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,6 +49,7 @@ public class LocationService {
         return LocationListProfileDto.fromEntity(location);
     }
 
+    @Transactional
     /** Add a new walk location of a dog. */
     public LocationCreateDto createLocation(@RequestBody LocationCreateDto locationCreateDto) throws NoSuchElementException, IllegalArgumentException {
         Location location = locationCreateDto.toEntity();
@@ -67,6 +70,7 @@ public class LocationService {
         return LocationCreateDto.fromEntity(createdLocation, creatorDogId);
     }
 
+    @Transactional
     public LocationMembersDto joinLocation(@PathVariable Long locationId, @RequestBody Long dogId) throws NoSuchElementException, IllegalArgumentException {
         Location targetLocation = locationRepository.findById(locationId).orElse(null);
         if (targetLocation == null) {
@@ -80,8 +84,8 @@ public class LocationService {
             throw new IllegalArgumentException("Your dog already added this walking location.");
         }
         Location updatedLocation = locationRepository.save(targetLocation);
-        List<Long> dogIds = updatedLocation.getWalkingDogs().stream().map(Dog::getId)
-                .collect(Collectors.toList());
+        Set<Long> dogIds = updatedLocation.getWalkingDogs().stream().map(Dog::getId)
+                .collect(Collectors.toSet());
         return LocationMembersDto.fromEntity(updatedLocation, dogIds);
     }
 

@@ -2,6 +2,7 @@ package com.example.demo.dto;
 
 import com.example.demo.entity.Owner;
 import com.example.demo.service.OwnerService;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 @NoArgsConstructor
 @Setter
+@Getter
 @Component
 public class DogShowMustacheDto {
     Long id;
@@ -23,7 +25,7 @@ public class DogShowMustacheDto {
     public DogShowMustacheDto(OwnerService ownerService) {
         DogShowMustacheDto.ownerService = ownerService;
     }
-    public static DogShowMustacheDto fromDogProfileDto(OwnersDogProfileDto dogProfileDto) {
+    public static DogShowMustacheDto fromDogProfileDto(DogProfileDto dogProfileDto) {
         Long dogsOwnerId = dogProfileDto.getDogsOwnerId();
         Owner owner = ownerService.getOwnerEntity(dogsOwnerId);
 

@@ -27,7 +27,7 @@ public class Location {
     @Column(nullable = false)
     Double longitude;
     @ManyToMany
-    List<Dog> walkingDogs;
+    Set<Dog> walkingDogs;
 
     @Override
     public String toString() {
@@ -44,7 +44,7 @@ public class Location {
 
     public boolean addWalkingDog(Dog dog) {
         if (this.walkingDogs == null) {
-            this.walkingDogs = new ArrayList<>();
+            this.walkingDogs = new HashSet<>();
         }
         if (walkingDogs.contains(dog)) {
             return false;

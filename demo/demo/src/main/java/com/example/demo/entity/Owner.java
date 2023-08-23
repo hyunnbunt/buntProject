@@ -16,7 +16,7 @@ public class Owner {
     Long id;
     String name;
     @OneToMany(mappedBy = "owner", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    List<Dog> dogs;
+    Set<Dog> dogs;
     @Column
             // @Column 어노테이션이 없으면 이 컬럼 옵션이 nullable = false가 됨
     Long ownerPoints;

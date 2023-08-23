@@ -29,11 +29,12 @@ public class Event {
 
     @ManyToOne(optional = true)
     @JoinColumn // (nullable = false)
+            @JsonIgnore
     Dog organizerDog;
 
     @ManyToMany(mappedBy = "participatingEvents")
     @JsonIgnore
-    List<Dog> participantDogs;
+    Set<Dog> participantDogs;
 
     public Event(Long id, Long date, Long time, Double latitude, Double longitude) {
         this.id = id;
@@ -51,4 +52,18 @@ public class Event {
                 '}';
     }
 
+    public void patch(Event event) throws IllegalArgumentException {
+        if (event.getDate() != null) {
+            this.setDate(event.getDate());
+        }
+        if (event.getTime() != null) {
+            this.setTime(event.getTime());
+        }
+        if (event.getLatitude() != null) {
+            this.setLatitude(event.getLatitude());
+        }
+        if (event.getLongitude() != null) {
+            this.setLongitude(event.getLongitude());
+        }
+    }
 }

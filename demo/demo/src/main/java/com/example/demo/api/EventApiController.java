@@ -26,10 +26,10 @@ public class EventApiController {
         return eventService.showEvents();
     }
 
-    @GetMapping("/events/{id}")
-    public ResponseEntity<EventDto> showEventDetail(@PathVariable Long id) {
+    @GetMapping("/events/{eventId}")
+    public ResponseEntity<EventDto> showEventDetail(@PathVariable Long eventId) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(eventService.showEventDetail(id));
+            return ResponseEntity.status(HttpStatus.OK).body(eventService.showEventDetail(eventId));
         } catch (NoSuchElementException e) {
             log.info(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -43,13 +43,24 @@ public class EventApiController {
         return eventService.createEvent(eventDto);
     }
 
+    @PatchMapping("/events/{eventId}")
+    public ResponseEntity<EventDto> updateEvent(@PathVariable Long eventId, @RequestBody EventDto eventDto) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(eventService.updateEvent(eventId, eventDto));
+        } catch (IllegalArgumentException e) {
+            log.info(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
 
-
-    // RestAPI
-    //    GET (/events) : see all today’s events
-    //    POST (/events) : create a new event (body : organizer_Id = Dog.id}
-    //    GET (/events/{eventId}) : see the detail of the event
-    // PATCH (/dogs/{dogId}) : add an event to participating event column
-
+    @DeleteMapping("/events/{eventId}")
+    public ResponseEntity<EventDto> deleteEvent(@PathVariable Long eventId) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(eventService.deleteEvent(eventId));
+        } catch (NoSuchElementException | IllegalArgumentException e) {
+            log.info(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
 
 }
