@@ -40,14 +40,14 @@ class LocationServiceTest {
     void createLocation() {
         Owner creatorOwner = new Owner("Jiwook");
         Dog creatorDog = new Dog(creatorOwner, "Hatu", 3D, 5.5, "male");
-        Location expected = new Location(3L, 55.5, 66.6, List.of(creatorDog));
+        Location expected = new Location(3L, 55.5, 66.6, Set.of(creatorDog));
 
         LocationCreateDto locationCreateDto = new LocationCreateDto();
         locationCreateDto.setLatitude(55.5);
         locationCreateDto.setLongitude(66.6);
         locationCreateDto.setCreatorDogId(4L);
         locationService.createLocation(locationCreateDto);
-        LocationListProfileDto actual = locationService.showLocationsDetail(3L);
+        LocationMembersDto actual = locationService.showLocationsDetail(3L);
         assertEquals(expected.toString(), actual.toString());
     }
 

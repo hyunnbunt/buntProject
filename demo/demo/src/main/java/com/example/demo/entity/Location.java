@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.example.demo.dto.LocationCreateDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
@@ -53,4 +54,13 @@ public class Location {
         return true;
     }
 
+    public boolean patch(LocationCreateDto locationCreateDto) {
+        if (locationCreateDto.getLatitude() != null) {
+            this.setLatitude(locationCreateDto.getLatitude());
+        }
+        if (locationCreateDto.getLongitude() != null) {
+            this.setLongitude(locationCreateDto.getLongitude());
+        }
+        return locationCreateDto.getCreatorDogId() == null;
+    }
 }

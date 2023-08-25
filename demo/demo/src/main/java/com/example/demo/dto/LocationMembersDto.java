@@ -17,9 +17,9 @@ public class LocationMembersDto {
     Long id;
     Double latitude;
     Double longitude;
-    Set<Long> dogIds;
+    List<Long> dogIds;
 
-    public static LocationMembersDto fromEntity(Location updatedLocation, Set<Long> dogIds) {
+    public static LocationMembersDto fromEntity(Location updatedLocation, List<Long> dogIds) {
         LocationMembersDto locationMembersDto = new LocationMembersDto();
         locationMembersDto.setId(updatedLocation.getId());
         locationMembersDto.setLatitude(updatedLocation.getLatitude());
@@ -34,8 +34,8 @@ public class LocationMembersDto {
         locationMembersDto.setLatitude(updatedLocation.getLatitude());
         locationMembersDto.setLongitude(updatedLocation.getLongitude());
         Set<Dog> dogs = updatedLocation.getWalkingDogs();
-        Set<Long> dogIds =
-                dogs.stream().map(Dog::getId).collect(Collectors.toSet());
+        List<Long> dogIds =
+                dogs.stream().map(Dog::getId).collect(Collectors.toList());
         locationMembersDto.setDogIds(dogIds);
         return locationMembersDto;
     }

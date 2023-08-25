@@ -1,5 +1,6 @@
 package com.example.demo.api;
 
+import com.example.demo.dto.LocationDeleteDto;
 import com.example.demo.dto.LocationListProfileDto;
 import com.example.demo.dto.LocationMembersDto;
 import com.example.demo.dto.LocationCreateDto;
@@ -33,7 +34,7 @@ public class LocationApiController {
 
     /** Show a location's detail. */
     @GetMapping("locations/{locationId}")
-    public ResponseEntity<LocationListProfileDto> showLocationDetail(@PathVariable Long locationId) {
+    public ResponseEntity<LocationMembersDto> showLocationDetail(@PathVariable Long locationId) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(locationService.showLocationsDetail(locationId));
         } catch (NoSuchElementException e) {
@@ -55,11 +56,32 @@ public class LocationApiController {
     }
 
     /** Join in a location. Maximum capacity : 3. */
-    @PatchMapping("locations/{locationId}")
+    @PatchMapping("locations/{locationId}/join-location")
     public  ResponseEntity<LocationMembersDto> joinLocation(@PathVariable Long locationId, @RequestBody Long dogId) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(locationService.joinLocation(locationId, dogId));
         } catch (IllegalArgumentException e) {
+            log.info(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    /** Join in a location. Maximum capacity : 3. */
+    @PatchMapping("locations/{locationId}")
+    public  ResponseEntity<LocationMembersDto> updateLocation(@PathVariable Long locationId, @RequestBody LocationCreateDto locationCreateDto) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(locationService.updateLocation(locationId, locationCreateDto));
+        } catch (IllegalArgumentException e) {
+            log.info(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @DeleteMapping("locations/{locationId}")
+    public ResponseEntity<LocationDeleteDto> deleteLocation(@PathVariable Long locationId) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(locationService.deleteLocation(locationId));
+        } catch (NoSuchElementException | IllegalArgumentException e) {
             log.info(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }

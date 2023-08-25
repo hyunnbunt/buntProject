@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 
+import com.example.demo.dto.LocationDeleteDto;
 import com.example.demo.dto.LocationListProfileDto;
 import com.example.demo.dto.LocationMembersDto;
 import com.example.demo.dto.LocationCreateDto;
@@ -42,11 +43,11 @@ public class LocationService {
     }
 
     /** Show a detail of a location. */
-    public LocationListProfileDto showLocationsDetail(Long locationId) throws NoSuchElementException {
+    public LocationMembersDto showLocationsDetail(Long locationId) throws NoSuchElementException {
         Location location = locationRepository.findById(locationId).orElseThrow(
                 () -> new NoSuchElementException("Can't find the location. Wrong id.")
         );
-        return LocationListProfileDto.fromEntity(location);
+        return LocationMembersDto.fromEntity(location);
     }
 
     @Transactional
@@ -72,22 +73,41 @@ public class LocationService {
 
     @Transactional
     public LocationMembersDto joinLocation(@PathVariable Long locationId, @RequestBody Long dogId) throws NoSuchElementException, IllegalArgumentException {
-        Location targetLocation = locationRepository.findById(locationId).orElse(null);
-        if (targetLocation == null) {
-            throw new NoSuchElementException("Can't find the location. Wrong id.");
-        }
-        Dog dog = dogRepository.findById(dogId).orElse(null);
-        if (dog == null) {
-            throw new NoSuchElementException("Can't find the dog. Wrong id.");
-        }
+        Location targetLocation = locationRepository.findById(locationId).orElseThrow(
+                () -> new NoSuchElementException("Can't find the location. Wrong id.")
+        );
+        Dog dog = dogRepository.findById(dogId).orElseThrow(
+                () -> new NoSuchElementException("Can't find the dog. Wrong id.")
+        );
         if (!targetLocation.addWalkingDog(dog)) {
             throw new IllegalArgumentException("Your dog already added this walking location.");
         }
         Location updatedLocation = locationRepository.save(targetLocation);
-        Set<Long> dogIds = updatedLocation.getWalkingDogs().stream().map(Dog::getId)
-                .collect(Collectors.toSet());
+        List<Long> dogIds = updatedLocation.getWalkingDogs().stream().map(Dog::getId)
+                .collect(Collectors.toList());
         return LocationMembersDto.fromEntity(updatedLocation, dogIds);
     }
 
+    public LocationMembersDto updateLocation(Long locationId, LocationCreateDto locationCreateDto) throws NoSuchElementException, IllegalArgumentException {
+        Location target = locationRepository.findById(locationId).orElseThrow(
+                () -> new NoSuchElementException("Can't find the location. Wrong id.")
+        );
+        if (target.getId() != null && !locationCreateDto.getId().equals(target.getId())) {
+            throw new IllegalArgumentException("You are not allowed to update the id.");
+        }
+        if (!target.patch(locationCreateDto)) {
+            throw new IllegalArgumentException("Wrong access.");
+        }
+        locationRepository.save(target);
+        return LocationMembersDto.fromEntity(target);
+    }
 
+    public LocationDeleteDto deleteLocation(Long locationId) throws NoSuchElementException {
+        Location target = locationRepository.findById(locationId).orElseThrow(
+                () -> new NoSuchElementException("Can't find the location. Wrong id.")
+        );
+        LocationDeleteDto locationDeleteDto = LocationDeleteDto.fromEntity(target);
+        locationRepository.delete(target);
+        return locationDeleteDto;
+    }
 }
