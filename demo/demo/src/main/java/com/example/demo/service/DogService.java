@@ -135,14 +135,12 @@ public class DogService {
         // 양쪽을 다 확인하는 것이 좋은가? 이미 엔티티 관계 정의에 의해서 양쪽에 상호 참조하도록 되어 있기는 한데...
         // 나중에 양쪽 중 한 쪽만 팔로잉 하는 식으로 단방향 친구 관계를 맺도록 관계 구성이 바뀐다면 더 수월하도록
         // 양쪽에서 모두 친구 관계를 validate 하는 것이 좋을 것 같다는 생각?
-        if (!dog.getFriends().contains(friend) || !friend.getFriends().contains(dog)) {
+        if (!dog.getFriends().remove(friend) ||  !friend.getFriends().remove(dog)) {
             throw new IllegalArgumentException("The dogs are already not friends.");
         }
-        dog.getFriends().remove(friend);
-        friend.getFriends().remove(dog);
         dogRepository.save(dog);
-        dogRepository.save(friend);
-        return DogFriendsNameDto.fromEntity(dogRepository.save(friend));
+        friend = dogRepository.save(friend);
+        return DogFriendsNameDto.fromEntity(friend);
     }
 
 }

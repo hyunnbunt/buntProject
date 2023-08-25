@@ -37,7 +37,6 @@ public class DogFriendsApiController {
 
     /** Make friends for two dogs. */
     @PostMapping("dogs/{dogId}/make-new-friend")
-    @Transactional
     public ResponseEntity<DogFriendsNameDto> makeFriends(@PathVariable Long dogId, @RequestBody Long friendId) {
         try {
            return ResponseEntity.status(HttpStatus.OK).body(dogService.makeFriends(dogId, friendId));
@@ -48,11 +47,10 @@ public class DogFriendsApiController {
     }
 
     @PatchMapping("dogs/{dogId}/cancel-friend")
-    @Transactional
     public ResponseEntity<DogFriendsNameDto> cancelFriends(@PathVariable Long dogId, @RequestBody Long friendId) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(dogService.cancelFriends(dogId, friendId));
-        } catch (NoSuchElementException | IllegalArgumentException e){
+        } catch (NoSuchElementException | IllegalArgumentException e) {
             log.info(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
