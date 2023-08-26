@@ -84,7 +84,7 @@ public class DogService {
     }
 
     @Transactional
-    public DogProfileDto joinEvent(@RequestBody DogEventUpdateDto dogEventUpdateDto) throws NoSuchElementException, IllegalArgumentException {
+    public DogEventProfileDto joinEvent(@RequestBody DogEventUpdateDto dogEventUpdateDto) throws NoSuchElementException, IllegalArgumentException {
         Dog targetDog = dogRepository.findById(dogEventUpdateDto.getDogId()).orElseThrow(
                 () -> new NoSuchElementException("Can't find the dog."));
         Event targetEvent = eventRepository.findById(dogEventUpdateDto.getParticipatingEventId()).orElseThrow(
@@ -93,7 +93,7 @@ public class DogService {
             throw new IllegalArgumentException("The dog is already participating the event.");
         }
         Dog updated = dogRepository.save(targetDog);
-        return DogProfileDto.fromEntity(updated);
+        return DogEventProfileDto.fromEntity(updated);
     }
 
     @Transactional

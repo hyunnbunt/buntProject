@@ -92,11 +92,11 @@ public class LocationService {
         Location target = locationRepository.findById(locationId).orElseThrow(
                 () -> new NoSuchElementException("Can't find the location. Wrong id.")
         );
-        if (target.getId() != null && !locationCreateDto.getId().equals(target.getId())) {
+        if (locationCreateDto.getId() != null && !locationCreateDto.getId().equals(target.getId())) {
             throw new IllegalArgumentException("You are not allowed to update the id.");
         }
         if (!target.patch(locationCreateDto)) {
-            throw new IllegalArgumentException("Wrong access.");
+            throw new IllegalArgumentException("Wrong access. You can change only latitude and longitude.");
         }
         locationRepository.save(target);
         return LocationMembersDto.fromEntity(target);

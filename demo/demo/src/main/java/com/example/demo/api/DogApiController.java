@@ -73,7 +73,7 @@ public class DogApiController {
 
     /** A dog joins an event. */
     @PatchMapping("dog-event-participation")
-    public ResponseEntity<DogProfileDto> joinEvent(@RequestBody DogEventUpdateDto dogEventUpdateDto) {
+    public ResponseEntity<DogEventProfileDto> joinEvent(@RequestBody DogEventUpdateDto dogEventUpdateDto) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(dogService.joinEvent(dogEventUpdateDto));
         } catch (NoSuchElementException | IllegalArgumentException e) {

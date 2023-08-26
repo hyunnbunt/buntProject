@@ -63,7 +63,7 @@ public class LocationApiController {
     public  ResponseEntity<LocationMembersDto> updateLocation(@PathVariable Long locationId, @RequestBody LocationCreateDto locationCreateDto) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(locationService.updateLocation(locationId, locationCreateDto));
-        } catch (IllegalArgumentException e) {
+        } catch (NoSuchElementException | IllegalArgumentException e) {
             log.info(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }

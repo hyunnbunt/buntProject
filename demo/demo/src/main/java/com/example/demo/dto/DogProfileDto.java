@@ -2,6 +2,7 @@ package com.example.demo.dto;
 
 import com.example.demo.entity.Dog;
 import com.example.demo.entity.Event;
+import com.example.demo.entity.Location;
 import com.example.demo.entity.Owner;
 import com.example.demo.service.OwnerService;
 import lombok.AllArgsConstructor;
@@ -11,6 +12,7 @@ import lombok.Setter;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,6 +26,8 @@ public class DogProfileDto {
     Double weight;
     String sex;
     Set<Event> participatingEvents;
+    Set<Location> walkingLocations;
+    Set<String> dogFriendNames;
 
     public DogProfileDto(Long dogsOwnerId, String name, Double age, Double weight, String sex) {
         this.dogsOwnerId = dogsOwnerId;
@@ -58,9 +62,11 @@ public class DogProfileDto {
         dogEntity.setAge(this.age);
         dogEntity.setWeight(this.weight);
         dogEntity.setSex(this.sex);
+        if (this.getParticipatingEvents() != null || this.getWalkingLocations() != null || this.getDogFriendNames() != null) {
+            throw new IllegalArgumentException("Some information are not allowed to be given.");
+        }
         // always null when this method is executed :
         // can't join an event while creating new dog profile.
-        dogEntity.setParticipatingEvents(this.participatingEvents);
         return dogEntity;
     }
 
@@ -73,6 +79,9 @@ public class DogProfileDto {
         dogProfileDto.setWeight(dog.getWeight());
         dogProfileDto.setSex(dog.getSex());
         dogProfileDto.setParticipatingEvents(dog.getParticipatingEvents());
+        dogProfileDto.setWalkingLocations(dog.getWalkLocations());
+        Set<String> friendsNames = dog.getFriends().stream().map(Dog::getName).collect(Collectors.toSet());
+        dogProfileDto.setDogFriendNames(friendsNames);
         return dogProfileDto;
     }
 }

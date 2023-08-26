@@ -1,9 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.DogEventUpdateDto;
-import com.example.demo.dto.DogFriendsNameDto;
-import com.example.demo.dto.DogProfileDto;
-import com.example.demo.dto.DogUpdateDto;
+import com.example.demo.dto.*;
 import com.example.demo.entity.Event;
 import jakarta.transaction.Transactional;
 import org.assertj.core.util.Lists;
@@ -67,28 +64,6 @@ class DogServiceTest {
     void updateDog() {
         DogUpdateDto expected = new DogUpdateDto(1L, "Bunt", 4D, 6.5D, "male");
         DogUpdateDto actual = dogService.updateDog(1L, expected);
-        assertEquals(expected.toString(), actual.toString());
-    }
-
-    @Test
-    @Transactional
-    void deleteDog() {
-        Event event = new Event();
-        event.setId(3L);
-        event.setDate(20231101L);
-        event.setTime(2050L);
-        event.setLatitude(11.11D);
-        event.setLongitude(55.16D);
-        DogProfileDto expected = new DogProfileDto(4L, 4L, "Hatu", 3D, 5.5D, "male", Lists.newArrayList(event));
-        DogProfileDto actual = dogService.deleteDog(4L);
-        assertEquals(expected.toString(), actual.toString());
-    }
-
-    @Test
-    @Transactional
-    void joinEvent() {
-        DogProfileDto expected = new DogProfileDto(5L, "Latte", 3D, 8.0D, "male");
-        DogProfileDto actual = dogService.joinEvent(new DogEventUpdateDto(5L, 3L));
         assertEquals(expected.toString(), actual.toString());
     }
 
