@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -65,5 +66,16 @@ public class Event {
         if (event.getLongitude() != null) {
             this.setLongitude(event.getLongitude());
         }
+    }
+
+    public boolean addParticipatingDog(Dog dog) {
+        if (this.participantDogs == null) {
+            this.participantDogs = new HashSet<>();
+        }
+        if (participantDogs.contains(dog)) {
+            return false;
+        }
+        participantDogs.add(dog);
+        return true;
     }
 }

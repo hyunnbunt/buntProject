@@ -56,15 +56,7 @@ public class LocationApiController {
     }
 
     /** Join in a location. Maximum capacity : 3. */
-    @PatchMapping("locations/{locationId}/join-location")
-    public  ResponseEntity<LocationMembersDto> joinLocation(@PathVariable Long locationId, @RequestBody Long dogId) {
-        try {
-            return ResponseEntity.status(HttpStatus.OK).body(locationService.joinLocation(locationId, dogId));
-        } catch (IllegalArgumentException e) {
-            log.info(e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-    }
+
 
     /** Join in a location. Maximum capacity : 3. */
     @PatchMapping("locations/{locationId}")

@@ -28,7 +28,9 @@ public class Location {
     @Column(nullable = false)
     Double longitude;
     @ManyToMany
+    @JsonIgnore
     Set<Dog> walkingDogs;
+
 
     @Override
     public String toString() {
@@ -62,5 +64,16 @@ public class Location {
             this.setLongitude(locationCreateDto.getLongitude());
         }
         return locationCreateDto.getCreatorDogId() == null;
+    }
+
+    public boolean addLocation(Dog targetDog) {
+        if (this.walkingDogs == null) {
+            this.walkingDogs = new HashSet<>();
+        }
+        if (this.walkingDogs.contains(targetDog)) {
+            return false;
+        }
+        this.walkingDogs.add(targetDog);
+        return true;
     }
 }

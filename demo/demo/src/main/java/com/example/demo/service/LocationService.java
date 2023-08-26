@@ -59,7 +59,7 @@ public class LocationService {
         }
         Long creatorDogId = locationCreateDto.getCreatorDogId();
         if (creatorDogId == null) {
-            throw new IllegalArgumentException("Can't find the dog. Id is null.");
+            throw new IllegalArgumentException("You should set your creator dog for the new location.");
         }
         Dog creatorDog = dogRepository.findById(creatorDogId).orElseThrow(
                 () -> new IllegalArgumentException("Can't find the dog. Wrong id.")

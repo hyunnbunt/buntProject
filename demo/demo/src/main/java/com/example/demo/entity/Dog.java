@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,6 +18,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Setter
 @AllArgsConstructor
+@Slf4j
 public class Dog {
     @Column
     @Id
@@ -42,7 +44,6 @@ public class Dog {
     @ManyToMany(fetch = FetchType.EAGER)
     Set<Event> participatingEvents;
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "walkingDogs")
-    @JsonIgnore
     Set<Location> walkLocations;
 
     public Dog(Owner owner, String name, Double age, Double weight, String sex) {
@@ -103,4 +104,13 @@ public class Dog {
         }
         this.setFriends(null);
     }
+
+    public boolean cancelEvent(Event targetEvent) {
+        // if the first condition is true, it will not check the second condition. No possibility of NullPointerException.
+        if (this.participatingEvents == null || !this.participatingEvents.contains(targetEvent)) {
+            return false;
+        }
+        return this.participatingEvents.remove(targetEvent);
+    }
+
 }

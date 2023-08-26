@@ -1,8 +1,6 @@
 package com.example.demo.api;
 
-import com.example.demo.dto.DogEventUpdateDto;
-import com.example.demo.dto.DogProfileDto;
-import com.example.demo.dto.DogUpdateDto;
+import com.example.demo.dto.*;
 import com.example.demo.service.DogService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -83,4 +81,26 @@ public class DogApiController {
             return  ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
+
+    @PatchMapping("dog-event-cancellation")
+    public ResponseEntity<DogProfileDto> cancelEvent(@RequestBody DogEventCancelDto dogEventCancelDto) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(dogService.cancelEvent(dogEventCancelDto));
+        } catch (NoSuchElementException | IllegalArgumentException e) {
+            log.info(e.getMessage());
+            return  ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @PatchMapping("dog-location-registration")
+    public  ResponseEntity<LocationMembersDto> joinLocation(@RequestBody DogLocationUpdateDto dogLocationUpdateDto) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(dogService.joinLocation(dogLocationUpdateDto));
+        } catch (NoSuchElementException | IllegalArgumentException e) {
+            log.info(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+
 }

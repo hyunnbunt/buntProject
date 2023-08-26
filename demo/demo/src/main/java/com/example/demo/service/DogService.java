@@ -1,13 +1,12 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.DogEventUpdateDto;
-import com.example.demo.dto.DogFriendsNameDto;
-import com.example.demo.dto.DogProfileDto;
-import com.example.demo.dto.DogUpdateDto;
+import com.example.demo.dto.*;
 import com.example.demo.entity.Dog;
 import com.example.demo.entity.Event;
+import com.example.demo.entity.Location;
 import com.example.demo.repository.DogRepository;
 import com.example.demo.repository.EventRepository;
+import com.example.demo.repository.LocationRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,17 +20,18 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class DogService {
-
     private DogRepository dogRepository;
     OwnerService ownerService;
     private EventRepository eventRepository;
+    private LocationRepository locationRepository;
 
 
     @Autowired
-    public DogService(DogRepository dogRepository, OwnerService ownerService, EventRepository eventRepository) {
+    public DogService(DogRepository dogRepository, OwnerService ownerService, EventRepository eventRepository, LocationRepository locationRepository) {
         this.dogRepository = dogRepository;
         this.ownerService = ownerService;
         this.eventRepository = eventRepository;
+        this.locationRepository = locationRepository;
     }
 
     public List<DogProfileDto> showDogs() {
@@ -60,10 +60,9 @@ public class DogService {
 
     @Transactional
     public DogUpdateDto updateDog(@PathVariable Long id, @RequestBody DogUpdateDto dogUpdateDto) throws IllegalArgumentException {
-        Dog target = dogRepository.findById(id).orElse(null);
-        if (target == null) {
-            throw new IllegalArgumentException("Can't find the dog. Wrong id.");
-        }
+        Dog target = dogRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("Can't find the dog. Wrong id.")
+        );
         if (dogUpdateDto.getId() != null && !dogUpdateDto.getId().equals(target.getId())) {
             throw new IllegalArgumentException("Can't update the dog's id.");
         }
@@ -79,7 +78,7 @@ public class DogService {
         Dog target = dogRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException("Can't find the dog.")
         );
-        // target.emptyFriendsList();
+        target.emptyFriendsList();
         dogRepository.delete(target);
         return DogProfileDto.fromEntity(target);
     }
@@ -143,4 +142,28 @@ public class DogService {
         return DogFriendsNameDto.fromEntity(friend);
     }
 
+    public DogProfileDto cancelEvent(DogEventCancelDto dogEventCancelDto) throws NoSuchElementException, IllegalArgumentException{
+        Dog targetDog = dogRepository.findById(dogEventCancelDto.getDogId()).orElseThrow(
+                () -> new NoSuchElementException("Can't find the dog."));
+        Event targetEvent = eventRepository.findById(dogEventCancelDto.getCancellingEventId()).orElseThrow(
+                () -> new NoSuchElementException("Can't find the event."));
+        if (!targetDog.cancelEvent(targetEvent)) {
+            throw new IllegalArgumentException("The dog isn't participating the event.");
+        }
+        Dog updated = dogRepository.save(targetDog);
+        return DogProfileDto.fromEntity(updated);
+
+    }
+
+    public LocationMembersDto joinLocation(DogLocationUpdateDto dogLocationUpdateDto) throws NoSuchElementException, IllegalArgumentException {
+        Dog targetDog = dogRepository.findById(dogLocationUpdateDto.getDogId()).orElseThrow(
+                () -> new NoSuchElementException("Can't find the dog."));
+        Location targetLocation = locationRepository.findById(dogLocationUpdateDto.getJoiningLocation()).orElseThrow(
+                () -> new NoSuchElementException("Can't find the event."));
+        if (!targetLocation.addLocation(targetDog)) {
+            throw new IllegalArgumentException("The dog is already participating the event.");
+        }
+        dogRepository.save(targetDog);
+        return LocationMembersDto.fromEntity(targetLocation);
+    }
 }

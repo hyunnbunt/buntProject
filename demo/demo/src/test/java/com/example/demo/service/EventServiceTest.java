@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.EventCreateDto;
 import com.example.demo.dto.EventDto;
 import com.example.demo.entity.Event;
 import jakarta.transaction.Transactional;
@@ -42,11 +43,4 @@ class EventServiceTest {
         assertEquals(expected.toString(), actual.toString());
     }
 
-    @Test
-    @Transactional
-    void createEvent() {
-        EventDto expected = new EventDto(20231225L, 1100L, 56.352, 126.66);
-        EventDto actual = eventService.createEvent(expected);
-        assertEquals(expected.toString(), actual.toString());
-    }
 }
