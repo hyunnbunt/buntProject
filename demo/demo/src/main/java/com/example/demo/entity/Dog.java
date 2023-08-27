@@ -35,15 +35,15 @@ public class Dog {
     Double weight;
     @Column
     String sex;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     Set<Dog> friends;
     @Column
     Integer happinessPoints;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "organizerDog", cascade = CascadeType.REMOVE)
     Set<Event> organizingEvents;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     Set<Event> participatingEvents;
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "walkingDogs")
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "walkingDogs", cascade = CascadeType.REMOVE)
     Set<Location> walkLocations;
 
     public Dog(Owner owner, String name, Double age, Double weight, String sex) {
