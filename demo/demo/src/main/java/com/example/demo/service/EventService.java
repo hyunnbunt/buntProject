@@ -1,9 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.DogUpdateDto;
-import com.example.demo.dto.EventCreateDto;
-import com.example.demo.dto.EventDto;
-import com.example.demo.dto.LocationCreateDto;
+import com.example.demo.dto.*;
 import com.example.demo.entity.Dog;
 import com.example.demo.entity.Event;
 import com.example.demo.entity.Location;
@@ -36,15 +33,15 @@ public class EventService {
                         map(EventDto::fromEntity).toList();
     }
 
-    public EventDto showEventDetail(@PathVariable Long id) throws NoSuchElementException {
+    public EventProfileDto showEventDetail(@PathVariable Long id) throws NoSuchElementException {
         Event event = eventRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException("Wrong id.")
         );
-        return EventDto.fromEntity(event);
+        return EventProfileDto.fromEntity(event);
     }
 
     @Transactional
-    public EventCreateDto createEvent(@RequestBody EventCreateDto eventCreateDto) throws IllegalArgumentException {
+    public EventProfileDto createEvent(@RequestBody EventCreateDto eventCreateDto) throws IllegalArgumentException {
         Event event = eventCreateDto.toEntity();
         if (event.getId() != null) {
             throw new IllegalArgumentException("Id must be null.");
@@ -60,7 +57,7 @@ public class EventService {
             throw new IllegalArgumentException("Your dog already added this event.");
         }
         Event createdEvent = eventRepository.save(eventCreateDto.toEntity());
-        return EventCreateDto.fromEntity(createdEvent, creatorDogId);
+        return EventProfileDto.fromEntity(createdEvent);
     }
 
     public EventDto updateEvent(@PathVariable Long eventId, @RequestBody EventDto eventDto) throws IllegalArgumentException {
@@ -72,7 +69,9 @@ public class EventService {
         }
         Event event = eventDto.toEntity();
         // 'patch' throws and exception.
-        target.patch(event);
+        if (!target.patch(event)) {
+            throw new IllegalArgumentException("Can't update the participant dogs.");
+        }
         eventRepository.save(target);
         return EventDto.fromEntity(target);
     }

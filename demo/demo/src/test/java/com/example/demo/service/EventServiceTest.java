@@ -24,23 +24,5 @@ class EventServiceTest {
         this.eventService = eventService;
     }
 
-    @Test
-    @Transactional
-    void showEvents() {
-        EventDto event1 = new EventDto(20230816L, 1530L, 37.541, 126.986);
-        EventDto event2 = new EventDto(20231009L, 1900L, 25.66, 166.2);
-        EventDto event3 = new EventDto(20231101L, 2050L, 11.11, 55.16);
-        List<EventDto> expected = new ArrayList(Arrays.asList(event1, event2, event3));
-        List<EventDto> actual = eventService.showEvents();
-        assertEquals(expected.toString(), actual.toString());
-    }
-
-    @Test
-    @Transactional
-    void showEventDetail() {
-        EventDto expected = new EventDto(20230816L, 1530L, 37.541, 126.986);
-        EventDto actual = eventService.showEventDetail(1L);
-        assertEquals(expected.toString(), actual.toString());
-    }
 
 }

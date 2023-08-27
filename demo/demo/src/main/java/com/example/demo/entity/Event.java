@@ -53,7 +53,7 @@ public class Event {
                 '}';
     }
 
-    public void patch(Event event) throws IllegalArgumentException {
+    public boolean patch(Event event) throws IllegalArgumentException {
         if (event.getDate() != null) {
             this.setDate(event.getDate());
         }
@@ -66,6 +66,7 @@ public class Event {
         if (event.getLongitude() != null) {
             this.setLongitude(event.getLongitude());
         }
+        return event.getParticipantDogs() == null;
     }
 
     public boolean addParticipatingDog(Dog dog) {
