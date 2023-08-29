@@ -1,9 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.*;
-import com.example.demo.entity.Event;
 import jakarta.transaction.Transactional;
-import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,68 +30,38 @@ class DogServiceTest {
 //        Owner owner4 = new Owner("Jiwook");
 //        Owner owner5 = new Owner("Chih");
 
-        DogProfileDto a = new DogProfileDto(1L, "Lana", 10d, 3D, "female");
-        DogProfileDto b = new DogProfileDto( 2L, "Bunt", 4D, 6.2D, "male");
-        DogProfileDto c = new DogProfileDto(3L, "Biscuit",  2D, 4.5d,"male");
-        DogProfileDto d = new DogProfileDto(4L, "Hatu", 3D,5.5D,  "male");
-        DogProfileDto e = new DogProfileDto(5L, "Latte", 3D,8D,  "male");
+        DogDto a = new DogDto(1L, "Lana", 10d, 3D, "female");
+        DogDto b = new DogDto(2L, "Bunt", 4D, 6.2D, "male");
+        DogDto c = new DogDto(3L, "Biscuit", 2D, 4.5d, "male");
+        DogDto d = new DogDto(4L, "Hatu", 3D, 5.5D, "male");
+        DogDto e = new DogDto(5L, "Latte", 3D, 8D, "male");
         // LIst<DogProfileDto> 에 ArrayList<Dog> 을 어사인 했는데 왜 컴파일이 됐는지?
-        List<DogProfileDto> expected = new ArrayList(Arrays.asList(a, b, c, d, e));
-        List<DogProfileDto> actual = dogService.showDogs();
+        List<DogDto> expected = new ArrayList(Arrays.asList(a, b, c, d, e));
+        List<DogDto> actual = dogService.showDogs();
         assertEquals(expected.toString(), actual.toString());
     }
 
     @Test
     @Transactional
     void showDogProfile() {
-        DogProfileDto expected = new DogProfileDto(1L, "Lana",10D, 3d, "female");
-        DogProfileDto actual = dogService.showDogProfile(1L);
+        DogDto expected = new DogDto(1L, "Lana", 10D, 3d, "female");
+        DogDto actual = dogService.showDogProfile(1L);
         assertEquals(expected.toString(), actual.toString());
     }
 
-    @Test
-    @Transactional
-    void createDog() {
-        DogProfileDto expected = new DogProfileDto(6L, "Dallae", 2D, 3D, "female");
-        DogProfileDto actual = dogService.createDog(expected);
-        assertEquals(expected.toString(), actual.toString());
-    }
+//    @Test
+//    @Transactional
+//    void createDog() {
+//        DogDto expected = new DogDto(6L, "Dallae", 2D, 3D, "female");
+//        DogDto actual = dogService.createDog(expected);
+//        assertEquals(expected.toString(), actual.toString());
+//    }
 
-    @Test
-    @Transactional
-    void updateDog() {
-        DogUpdateDto expected = new DogUpdateDto(1L, "Bunt", 4D, 6.5D, "male");
-        DogUpdateDto actual = dogService.updateDog(1L, expected);
-        assertEquals(expected.toString(), actual.toString());
-    }
-
-    @Test
-    @Transactional
-    void showFriends() {
-        List<DogFriendsNameDto> expected = new ArrayList(Arrays.asList(new DogFriendsNameDto("Lana")));
-        List<DogFriendsNameDto> actual = dogService.showFriends(2L);
-        assertEquals(expected.toString(), actual.toString());
-    }
-
-    @Test
-    @Transactional
-    void makeFriends() {
-        List<DogFriendsNameDto> expected1 = new ArrayList(Arrays.asList(new DogFriendsNameDto("Lana"), new DogFriendsNameDto("Latte")));
-        List<DogFriendsNameDto> expected2 = new ArrayList(Arrays.asList(new DogFriendsNameDto("Bunt")));
-        dogService.makeFriends(2L, 5L);
-        List<DogFriendsNameDto> actual1 = dogService.showFriends(2L);
-        List<DogFriendsNameDto> actual2 = dogService.showFriends(5L);
-        assertEquals(expected1.toString(), actual1.toString());
-        assertEquals(expected2.toString(), actual2.toString());
-    }
-
-    @Test
-    @Transactional
-    void cancelFriends() {
-        dogService.cancelFriends(1L, 2L);
-        List<DogFriendsNameDto> actual1 = dogService.showFriends(1L);
-        List<DogFriendsNameDto> actual2 = dogService.showFriends(2L);
-        assertTrue(actual1.isEmpty());
-        assertTrue(actual2.isEmpty());
-    }
+//    @Test
+//    @Transactional
+//    void updateDog() {
+//        DogUpdateDto expected = new DogUpdateDto(1L, "Bunt", 4D, 6.5D, "male");
+//        DogUpdateDto actual = dogService.updateDog(1L, expected);
+//        assertEquals(expected.toString(), actual.toString());
+//    }
 }

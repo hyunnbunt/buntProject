@@ -1,5 +1,6 @@
 package com.example.demo.dto;
 
+import com.example.demo.entity.Dog;
 import com.example.demo.entity.Event;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
@@ -10,6 +11,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @NoArgsConstructor
@@ -18,12 +23,13 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Slf4j
 public class EventDto {
-
+    @NotNull
     Long id;
     Long date;
     Long time;
     Double latitude;
     Double longitude;
+    Set<Long> participantDogIds;
 
     public EventDto(Long date, Long time, Double latitude, Double longitude) {
         this.date = date;
@@ -43,7 +49,13 @@ public class EventDto {
     }
 
     public static EventDto fromEntity(Event event) {
-        return new EventDto(event.getId(), event.getDate(), event.getTime(), event.getLatitude(), event.getLongitude());
+        Set<Long> participantDogIds;
+        if (event.getParticipantDogs() == null) {
+            participantDogIds = null;
+        } else {
+            participantDogIds = event.getParticipantDogs().stream().map(Dog::getId).collect(Collectors.toSet());
+        }
+        return new EventDto(event.getId(), event.getDate(), event.getTime(), event.getLatitude(), event.getLongitude(), participantDogIds);
     }
     public Event toEntity() {
         return new Event(this.getId(), this.getDate(), this.getTime(), this.getLatitude(), this.getLongitude());

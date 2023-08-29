@@ -4,21 +4,25 @@ import com.example.demo.entity.Event;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
 @NoArgsConstructor
 @Setter
 @Getter
 public class EventCreateDto {
-    Long id;
+    @NotNull
     Long date;
+    @NotNull
     Long time;
+    @NotNull
     Double latitude;
+    @NotNull
     Double longitude;
+    @NotNull
     Long creatorDogId;
 
     public Event toEntity() {
         Event event = new Event();
-        event.setId(this.getId());
         event.setDate(this.getDate());
         event.setTime(this.getTime());
         event.setLatitude(this.getLatitude());
@@ -26,14 +30,4 @@ public class EventCreateDto {
         return event;
     }
 
-    public static EventCreateDto fromEntity(Event event, Long creatorDogId) {
-        EventCreateDto eventCreateDto = new EventCreateDto();
-        eventCreateDto.setId(event.getId());
-        eventCreateDto.setDate(event.getDate());
-        eventCreateDto.setTime(event.getTime());
-        eventCreateDto.setLatitude(event.getLatitude());
-        eventCreateDto.setLongitude(event.getLongitude());
-        eventCreateDto.setCreatorDogId(creatorDogId);
-        return eventCreateDto;
-    }
 }

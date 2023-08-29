@@ -25,17 +25,17 @@ public class DogShowMustacheDto {
     public DogShowMustacheDto(OwnerService ownerService) {
         DogShowMustacheDto.ownerService = ownerService;
     }
-    public static DogShowMustacheDto fromDogProfileDto(DogProfileDto dogProfileDto) {
-        Long dogsOwnerId = dogProfileDto.getDogsOwnerId();
-        Owner owner = ownerService.getOwnerEntity(dogsOwnerId);
+    public static DogShowMustacheDto fromDogProfileDto(DogDto dogDto) {
+        Long dogsOwnerId = dogDto.getOwnerId();
+        Owner owner = ownerService.getOwner(dogsOwnerId);
 
         DogShowMustacheDto dogShowMustacheDto = new DogShowMustacheDto();
-        dogShowMustacheDto.setId(dogProfileDto.getId());
+        dogShowMustacheDto.setId(dogDto.getId());
         dogShowMustacheDto.setDogsOwnerName(owner.getName());
-        dogShowMustacheDto.setName(dogProfileDto.getName());
-        dogShowMustacheDto.setAge(dogProfileDto.getAge());
-        dogShowMustacheDto.setWeight(dogProfileDto.getWeight());
-        dogShowMustacheDto.setSex(dogProfileDto.getSex());
+        dogShowMustacheDto.setName(dogDto.getName());
+        dogShowMustacheDto.setAge(dogDto.getAge());
+        dogShowMustacheDto.setWeight(dogDto.getWeight());
+        dogShowMustacheDto.setSex(dogDto.getSex());
         return dogShowMustacheDto;
     }
 

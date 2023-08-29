@@ -6,8 +6,10 @@ import com.example.demo.entity.Event;
 import com.example.demo.entity.Location;
 import com.example.demo.repository.DogRepository;
 import com.example.demo.repository.EventRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,8 +20,8 @@ import java.util.NoSuchElementException;
 @Service
 public class EventService {
 
-    private EventRepository eventRepository;
-    private DogRepository dogRepository;
+    private final EventRepository eventRepository;
+    private final DogRepository dogRepository;
 
     @Autowired
     public EventService(EventRepository eventRepository, DogRepository dogRepository) {
@@ -28,58 +30,50 @@ public class EventService {
     }
 
     public List<EventDto> showEvents() {
-        List<Event> eventList = eventRepository.findAll();
-        return eventList.stream().
-                        map(EventDto::fromEntity).toList();
+        return eventRepository.findAll().stream().map(EventDto::fromEntity).toList();
     }
 
-    public EventProfileDto showEventDetail(@PathVariable Long id) throws NoSuchElementException {
-        Event event = eventRepository.findById(id).orElseThrow(
-                () -> new NoSuchElementException("Wrong id.")
-        );
-        return EventProfileDto.fromEntity(event);
+    public EventDto showEventDetail(@PathVariable Long id) throws EntityNotFoundException {
+        Event event = eventRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return EventDto.fromEntity(event);
     }
 
     @Transactional
-    public EventProfileDto createEvent(@RequestBody EventCreateDto eventCreateDto) throws IllegalArgumentException {
+    public EventDto createEvent(@RequestBody EventCreateDto eventCreateDto) throws EntityNotFoundException, IllegalArgumentException {
+        Dog creatorDog = dogRepository.findById(eventCreateDto.getCreatorDogId()).orElseThrow(EntityNotFoundException::new);
         Event event = eventCreateDto.toEntity();
-        if (event.getId() != null) {
-            throw new IllegalArgumentException("Id must be null.");
-        }
-        Long creatorDogId = eventCreateDto.getCreatorDogId();
-        if (creatorDogId == null) {
-            throw new IllegalArgumentException("You should set your creator dog for the new event.");
-        }
-        Dog creatorDog = dogRepository.findById(creatorDogId).orElseThrow(
-                () -> new IllegalArgumentException("Can't find the dog. Wrong id.")
-        );
-        if (!event.addParticipatingDog(creatorDog)) {
-            throw new IllegalArgumentException("Your dog already added this event.");
-        }
-        Event createdEvent = eventRepository.save(eventCreateDto.toEntity());
-        return EventProfileDto.fromEntity(createdEvent);
+        event.addParticipatingDog(creatorDog);
+        Event created = eventRepository.save(event);
+        return EventDto.fromEntity(created);
     }
 
-    public EventDto updateEvent(@PathVariable Long eventId, @RequestBody EventDto eventDto) throws IllegalArgumentException {
-        Event target = eventRepository.findById(eventId).orElseThrow(
-                () -> new IllegalArgumentException("Can't find the event. Wrong id.")
-        );
-        if (eventDto.getId() != null && !eventDto.getId().equals(target.getId())) {
-            throw new IllegalArgumentException("Can't update the event's id.");
-        }
-        Event event = eventDto.toEntity();
-        // 'patch' throws and exception.
-        if (!target.patch(event)) {
-            throw new IllegalArgumentException("Can't update the participant dogs.");
-        }
-        eventRepository.save(target);
-        return EventDto.fromEntity(target);
+    @Transactional
+    public EventDto updateEvent(@PathVariable Long eventId, @RequestBody EventUpdateDto eventUpdateDto) throws EntityNotFoundException {
+        Event target = eventRepository.findById(eventId).orElseThrow(EntityNotFoundException::new);
+        patchEvent(target, eventUpdateDto);
+        Event updated = eventRepository.save(target);
+        return EventDto.fromEntity(updated);
     }
 
-    public EventDto deleteEvent(@PathVariable Long eventId) throws NoSuchElementException, IllegalArgumentException {
-        Event target = eventRepository.findById(eventId).orElseThrow(
-                () -> new NoSuchElementException("Can't find the event. Wrong id.")
-        );
+    @Transactional
+    public void patchEvent(Event event, EventUpdateDto eventUpdateDto) {
+        if (eventUpdateDto.getDate() != null) {
+            event.setDate(eventUpdateDto.getDate());
+        }
+        if (eventUpdateDto.getTime() != null) {
+            event.setTime(eventUpdateDto.getTime());
+        }
+        if (eventUpdateDto.getLatitude() != null) {
+            event.setLatitude(eventUpdateDto.getLatitude());
+        }
+        if (eventUpdateDto.getLongitude() != null) {
+            event.setLongitude(eventUpdateDto.getLongitude());
+        }
+    }
+
+    @Transactional
+    public EventDto deleteEvent(@PathVariable Long eventId) throws EntityNotFoundException {
+        Event target = eventRepository.findById(eventId).orElseThrow(EntityNotFoundException::new);
         eventRepository.delete(target);
         return EventDto.fromEntity(target);
     }

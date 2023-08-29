@@ -1,14 +1,14 @@
 package com.example.demo.api;
 
-import com.example.demo.dto.LocationDeleteDto;
-import com.example.demo.dto.LocationListProfileDto;
-import com.example.demo.dto.LocationMembersDto;
+import com.example.demo.dto.LocationDto;
 import com.example.demo.dto.LocationCreateDto;
 import com.example.demo.service.LocationService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,13 +28,13 @@ public class LocationApiController {
 
     /** Show the list of locations. */
     @GetMapping("locations")
-    public List<LocationListProfileDto> showLocationsList() {
+    public List<LocationDto> showLocationsList() {
         return locationService.showLocationsList();
     }
 
     /** Show a location's detail. */
     @GetMapping("locations/{locationId}")
-    public ResponseEntity<LocationMembersDto> showLocationDetail(@PathVariable Long locationId) {
+    public ResponseEntity<LocationDto> showLocationDetail(@PathVariable Long locationId) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(locationService.showLocationsDetail(locationId));
         } catch (NoSuchElementException e) {
@@ -46,36 +46,22 @@ public class LocationApiController {
 
     /** Add a new walk location. */
     @PostMapping("locations")
-    public ResponseEntity<LocationCreateDto> createLocation(@RequestBody LocationCreateDto locationCreateDto) {
+    public ResponseEntity<LocationDto> createLocation(@RequestBody @Validated LocationCreateDto locationCreateDto) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(locationService.createLocation(locationCreateDto));
-        } catch (IllegalArgumentException e) {
-            log.info(e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-    }
-
-    /** Join in a location. Maximum capacity : 3. */
-
-
-    /** Join in a location. Maximum capacity : 3. */
-    @PatchMapping("locations/{locationId}")
-    public  ResponseEntity<LocationMembersDto> updateLocation(@PathVariable Long locationId, @RequestBody LocationCreateDto locationCreateDto) {
-        try {
-            return ResponseEntity.status(HttpStatus.OK).body(locationService.updateLocation(locationId, locationCreateDto));
-        } catch (NoSuchElementException | IllegalArgumentException e) {
-            log.info(e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (EntityNotFoundException e1) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e2) {
+            return  ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 
     @DeleteMapping("locations/{locationId}")
-    public ResponseEntity<LocationDeleteDto> deleteLocation(@PathVariable Long locationId) {
+    public ResponseEntity<LocationDto> deleteLocation(@PathVariable Long locationId) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(locationService.deleteLocation(locationId));
-        } catch (NoSuchElementException | IllegalArgumentException e) {
-            log.info(e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 }

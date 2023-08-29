@@ -2,11 +2,14 @@ package com.example.demo.api;
 
 import com.example.demo.dto.*;
 import com.example.demo.service.DogService;
-import jakarta.transaction.Transactional;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,13 +27,13 @@ public class DogApiController {
 
     /** Show all dogs (nearby). */
     @GetMapping("dogs")
-    public List<DogProfileDto> showDogs() {
+    public List<DogDto> showDogs() {
         return dogService.showDogs();
     }
 
     /** Show a dog's profile. */
     @GetMapping("dogs/{id}")
-    public ResponseEntity<DogProfileDto> showDogProfile(@PathVariable Long id) {
+    public ResponseEntity<DogDto> showDogProfile(@PathVariable Long id) {
         try {
            return ResponseEntity.status(HttpStatus.OK).body(dogService.showDogProfile(id));
         } catch (NoSuchElementException e) {
@@ -41,18 +44,17 @@ public class DogApiController {
 
     /** Register a new dog profile. */
     @PostMapping("dogs")
-    public ResponseEntity<DogProfileDto> createDog(@RequestBody DogProfileDto dogProfileDto) {
+    public ResponseEntity<DogDto> createDog(@RequestBody @Validated DogCreateDto dogCreateDto) {
        try {
-           return ResponseEntity.status(HttpStatus.OK).body(dogService.createDog(dogProfileDto));
+           return ResponseEntity.status(HttpStatus.OK).body(dogService.createDog(dogCreateDto));
        } catch (IllegalArgumentException e) {
-           log.info(e.getMessage());
            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
        }
     }
 
-    /** Update some basic fields of a dog's profile. Can't update organizing/participating events. */
+    /** Update some basic fields of a dog's profile. Can't update organizing/participating events, dog friends, or happiness points. */
     @PatchMapping("dogs/{id}")
-    public ResponseEntity<DogUpdateDto> updateDog(@PathVariable Long id, @RequestBody DogUpdateDto dogUpdateDto) {
+    public ResponseEntity<DogDto> updateDog(@PathVariable Long id, @RequestBody DogUpdateDto dogUpdateDto) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(dogService.updateDog(id, dogUpdateDto));
         } catch (IllegalArgumentException e) {
@@ -62,45 +64,45 @@ public class DogApiController {
     }
     /** Delete a dog's profile. */
     @DeleteMapping("dogs/{id}")
-    public ResponseEntity<DogProfileDto> deleteDog(@PathVariable Long id) {
+    public ResponseEntity<DogDto> deleteDog(@PathVariable Long id) {
         try {
             return  ResponseEntity.status(HttpStatus.OK).body(dogService.deleteDog(id));
-        } catch (NoSuchElementException e) {
-            log.info(e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
     /** A dog joins an event. */
     @PatchMapping("dog-event-participation")
-    public ResponseEntity<DogEventProfileDto> joinEvent(@RequestBody DogEventUpdateDto dogEventUpdateDto) {
+    public ResponseEntity<DogDto> joinEvent(@RequestBody DogEventUpdateDto dogEventUpdateDto) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(dogService.joinEvent(dogEventUpdateDto));
-        } catch (NoSuchElementException | IllegalArgumentException e) {
-            log.info(e.getMessage());
+        } catch (EntityNotFoundException e1) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e2) {
             return  ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 
     @PatchMapping("dog-event-cancellation")
-    public ResponseEntity<DogProfileDto> cancelEvent(@RequestBody DogEventCancelDto dogEventCancelDto) {
+    public ResponseEntity<DogDto> cancelEvent(@RequestBody DogEventUpdateDto dogEventUpdateDto) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(dogService.cancelEvent(dogEventCancelDto));
-        } catch (NoSuchElementException | IllegalArgumentException e) {
-            log.info(e.getMessage());
+            return ResponseEntity.status(HttpStatus.OK).body(dogService.cancelEvent(dogEventUpdateDto));
+        } catch (EntityNotFoundException e1) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e2) {
             return  ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 
     @PatchMapping("dog-location-registration")
-    public  ResponseEntity<LocationMembersDto> joinLocation(@RequestBody DogLocationUpdateDto dogLocationUpdateDto) {
+    public  ResponseEntity<LocationDto> joinLocation(@RequestBody DogLocationUpdateDto dogLocationUpdateDto) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(dogService.joinLocation(dogLocationUpdateDto));
-        } catch (NoSuchElementException | IllegalArgumentException e) {
-            log.info(e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (EntityNotFoundException e1) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e2) {
+            return  ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
-
-
 }

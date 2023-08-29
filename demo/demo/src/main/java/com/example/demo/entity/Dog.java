@@ -35,15 +35,15 @@ public class Dog {
     Double weight;
     @Column
     String sex;
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @ManyToMany(fetch = FetchType.EAGER)
     Set<Dog> friends;
     @Column
     Integer happinessPoints;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "organizerDog", cascade = CascadeType.REMOVE)
     Set<Event> organizingEvents;
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @ManyToMany(fetch = FetchType.EAGER)
     Set<Event> participatingEvents;
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "walkingDogs", cascade = CascadeType.REMOVE)
+    @ManyToMany(fetch = FetchType.EAGER)
     Set<Location> walkLocations;
 
     public Dog(Owner owner, String name, Double age, Double weight, String sex) {
@@ -54,29 +54,6 @@ public class Dog {
         this.sex = sex;
     }
 
-    public void patch(Dog newDog) throws IllegalArgumentException {
-        if (newDog.owner == null && newDog.name == null && newDog.age == null && newDog.weight == null && newDog.sex == null) {
-            throw new IllegalArgumentException("No update info.");
-        }
-        if (newDog.owner != null) {
-            this.owner = newDog.owner;
-        }
-        if (newDog.name != null) {
-            this.name = newDog.name;
-        }
-        if (newDog.age != null) {
-            this.age = newDog.age;
-        }
-        if (newDog.weight != null) {
-            this.weight = newDog.weight;
-        }
-        if (newDog.sex != null) {
-            this.sex = newDog.sex;
-        }
-        if (!(newDog.friends == null && newDog.happinessPoints == null && newDog.organizingEvents == null && newDog.participatingEvents == null)) {
-            throw new IllegalArgumentException("Not allowed to access.");
-        }
-    }
 
     @Override
     public String toString() {
@@ -97,6 +74,13 @@ public class Dog {
         return true;
     }
 
+    public boolean removeEvent(Event targetEvent) {
+        if (this.participatingEvents == null) {
+            return false;
+        }
+        return this.participatingEvents.remove(targetEvent);
+    }
+
     public void emptyFriendsList() {
         Set<Dog> dogFriends = this.getFriends();
         for (Dog friend : dogFriends) {
@@ -105,12 +89,8 @@ public class Dog {
         this.setFriends(null);
     }
 
-    public boolean cancelEvent(Event targetEvent) {
-        // if the first condition is true, it will not check the second condition. No possibility of NullPointerException.
-        if (this.participatingEvents == null || !this.participatingEvents.contains(targetEvent)) {
-            return false;
-        }
-        return this.participatingEvents.remove(targetEvent);
+    public boolean joinLocation(Location location) {
+        return this.getWalkLocations().add(location);
     }
 
 }

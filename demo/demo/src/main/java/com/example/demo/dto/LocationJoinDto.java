@@ -1,15 +1,14 @@
 package com.example.demo.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
-@AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
-public class DogEventCancelDto {
+public class LocationJoinDto {
+    @NotNull
     Long dogId;
-    Long cancellingEventId;
 }

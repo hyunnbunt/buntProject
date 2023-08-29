@@ -9,8 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -18,19 +18,20 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Setter
 @Getter
-public class DogProfileDto {
+public class DogDto {
+    @NotNull
     Long id;
-    Long dogsOwnerId;
+    Long ownerId;
     String name;
     Double age;
     Double weight;
     String sex;
-    Set<Event> participatingEvents;
-    Set<Location> walkingLocations;
-    Set<String> dogFriendNames;
+    Set<Long> participatingEventIds;
+    Set<Long> walkingLocationIds;
+    Set<Long> friendIds;
 
-    public DogProfileDto(Long dogsOwnerId, String name, Double age, Double weight, String sex) {
-        this.dogsOwnerId = dogsOwnerId;
+    public DogDto(Long ownerId, String name, Double age, Double weight, String sex) {
+        this.ownerId = ownerId;
         this.name = name;
         this.age = age;
         this.weight = weight;
@@ -40,7 +41,7 @@ public class DogProfileDto {
     @Override
     public String toString() {
         return "DogProfileDto{" +
-                "dogsOwnerId=" + this.dogsOwnerId +
+                "dogsOwnerId=" + this.ownerId +
                 ", name='" + this.name + '\'' +
                 ", age=" + this.age +
                 ", weight=" + this.weight +
@@ -49,10 +50,10 @@ public class DogProfileDto {
 
     public Dog toEntity(OwnerService ownerService) throws IllegalArgumentException {
         Dog dogEntity = new Dog();
-        if (this.dogsOwnerId == null) {
+        if (this.ownerId == null) {
             throw new IllegalArgumentException("Owner id is required.");
         }
-        Owner dogsOwner = ownerService.getOwnerEntity(this.dogsOwnerId);
+        Owner dogsOwner = ownerService.getOwner(this.ownerId);
         if (dogsOwner == null) {
             throw new IllegalArgumentException("Can't find the owner.");
         }
@@ -62,26 +63,25 @@ public class DogProfileDto {
         dogEntity.setAge(this.age);
         dogEntity.setWeight(this.weight);
         dogEntity.setSex(this.sex);
-        if (this.getParticipatingEvents() != null || this.getWalkingLocations() != null || this.getDogFriendNames() != null) {
-            throw new IllegalArgumentException("Some information are not allowed to be given.");
-        }
+//        if (this.getParticipatingEvents() != null || this.getWalkingLocations() != null || this.getDogFriendNames() != null) {
+//            throw new IllegalArgumentException("Some information are not allowed to be given.");
+//        }
         // always null when this method is executed :
         // can't join an event while creating new dog profile.
         return dogEntity;
     }
 
-    public static DogProfileDto fromEntity(Dog dog) {
-        DogProfileDto dogProfileDto = new DogProfileDto();
-        dogProfileDto.setId(dog.getId());
-        dogProfileDto.setDogsOwnerId(dog.getOwner().getId());
-        dogProfileDto.setName(dog.getName());
-        dogProfileDto.setAge(dog.getAge());
-        dogProfileDto.setWeight(dog.getWeight());
-        dogProfileDto.setSex(dog.getSex());
-        dogProfileDto.setParticipatingEvents(dog.getParticipatingEvents());
-        dogProfileDto.setWalkingLocations(dog.getWalkLocations());
-        Set<String> friendsNames = dog.getFriends().stream().map(Dog::getName).collect(Collectors.toSet());
-        dogProfileDto.setDogFriendNames(friendsNames);
-        return dogProfileDto;
+    public static DogDto fromEntity(Dog dog) {
+        DogDto dogDto = new DogDto();
+        dogDto.setId(dog.getId());
+        dogDto.setOwnerId(dog.getOwner().getId());
+        dogDto.setName(dog.getName());
+        dogDto.setAge(dog.getAge());
+        dogDto.setWeight(dog.getWeight());
+        dogDto.setSex(dog.getSex());
+        dogDto.setParticipatingEventIds(dog.getParticipatingEvents().stream().map(Event::getId).collect(Collectors.toSet()));
+        dogDto.setWalkingLocationIds(dog.getWalkLocations().stream().map(Location::getId).collect(Collectors.toSet()));
+        dogDto.setFriendIds(dog.getFriends().stream().map(Dog::getId).collect(Collectors.toSet()));
+        return dogDto;
     }
 }

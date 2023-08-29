@@ -3,14 +3,15 @@ package com.example.demo.dto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
+
+import java.util.Set;
 
 @NoArgsConstructor
 @Setter
 @Getter
-public class DogLocationUpdateDto {
-    @NotNull
-    Long dogId;
-    @NotNull
-    Long walkingLocation;
+public class EventUpdateDto {
+    Long date;
+    Long time;
+    Double latitude;
+    Double longitude;
 }

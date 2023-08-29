@@ -1,14 +1,14 @@
 package com.example.demo.api;
 
+import com.example.demo.dto.OwnerCreateDto;
 import com.example.demo.dto.OwnerDto;
 import com.example.demo.service.OwnerService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.NoSuchElementException;
 
@@ -31,11 +31,20 @@ public class OwnerApiController {
         }
     }
 
+    @PostMapping("owners")
+    public ResponseEntity<OwnerDto> createProfile(@RequestBody @Validated OwnerCreateDto ownerCreateDto) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(ownerService.createProfile(ownerCreateDto));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
     @DeleteMapping("owners/{ownerId}")
     public ResponseEntity<OwnerDto> deleteProfile(@PathVariable Long ownerId) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(ownerService.deleteProfile(ownerId));
-        } catch (NoSuchElementException e) {
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }

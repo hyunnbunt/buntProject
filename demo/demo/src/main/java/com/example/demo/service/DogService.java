@@ -4,9 +4,11 @@ import com.example.demo.dto.*;
 import com.example.demo.entity.Dog;
 import com.example.demo.entity.Event;
 import com.example.demo.entity.Location;
+import com.example.demo.entity.Owner;
 import com.example.demo.repository.DogRepository;
 import com.example.demo.repository.EventRepository;
 import com.example.demo.repository.LocationRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,15 +17,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class DogService {
-    private DogRepository dogRepository;
-    OwnerService ownerService;
-    private EventRepository eventRepository;
-    private LocationRepository locationRepository;
+    private final DogRepository dogRepository;
+    private final OwnerService ownerService;
+    private final EventRepository eventRepository;
+    private final LocationRepository locationRepository;
 
 
     @Autowired
@@ -34,136 +35,143 @@ public class DogService {
         this.locationRepository = locationRepository;
     }
 
-    public List<DogProfileDto> showDogs() {
+    public List<DogDto> showDogs() {
         List<Dog> dogList = dogRepository.findAll();
-        return dogList.stream()
-                .map(DogProfileDto::fromEntity)
-                .collect(Collectors.toList());
+        return dogList.stream().map(DogDto::fromEntity).toList();
     }
 
-    public DogProfileDto showDogProfile(@PathVariable Long id) throws NoSuchElementException {
-        Dog dog = dogRepository.findById(id).orElseThrow(
-                () -> new NoSuchElementException("Can't find the dog.")
-        );
-        return DogProfileDto.fromEntity(dog);
+    public DogDto showDogProfile(@PathVariable Long id) throws NoSuchElementException {
+        Dog dog = dogRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return DogDto.fromEntity(dog);
     }
 
     @Transactional
-    public DogProfileDto createDog(DogProfileDto dogProfileDto) throws IllegalArgumentException {
-        if (dogProfileDto.getId() != null) {
-            throw new IllegalArgumentException("Id should be null.");
+    public DogDto createDog(@RequestBody DogCreateDto dogCreateDto) throws IllegalArgumentException {
+        Dog dog = this.toEntity(dogCreateDto, ownerService);
+        Dog created = dogRepository.save(dog);
+        return DogDto.fromEntity(created);
+    }
+
+    /** Convert a DogCreateDto instance to a Dog instance. Used in createDog method. */
+    private Dog toEntity(DogCreateDto dogCreateDto, OwnerService ownerService) {
+        Owner owner = ownerService.getOwner(dogCreateDto.getOwnerId());
+        Dog dog = new Dog();
+        dog.setOwner(owner);
+        dog.setName(dogCreateDto.getName());
+        dog.setAge(dogCreateDto.getAge());
+        dog.setWeight(dogCreateDto.getWeight());
+        dog.setSex(dogCreateDto.getSex());
+        return dog;
+    }
+
+    @Transactional
+    public DogDto updateDog(@PathVariable Long id, @RequestBody DogUpdateDto dogUpdateDto) throws EntityNotFoundException {
+        Dog target = dogRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        this.patch(target, dogUpdateDto);
+        Dog updated = dogRepository.save(target);
+        return DogDto.fromEntity(updated);
+    }
+
+    /** Patch a Dog instance with a DogUpdateDto instance's data. Used in updateDog method. */
+    public void patch(Dog target, DogUpdateDto dogUpdateDto) {
+        if (dogUpdateDto.getName() != null) {
+            target.setName(dogUpdateDto.getName());
         }
-        Dog newDog = dogProfileDto.toEntity(ownerService);
-        dogRepository.save(newDog);
-        return DogProfileDto.fromEntity(newDog);
-    }
-
-    @Transactional
-    public DogUpdateDto updateDog(@PathVariable Long id, @RequestBody DogUpdateDto dogUpdateDto) throws IllegalArgumentException {
-        Dog target = dogRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("Can't find the dog. Wrong id.")
-        );
-        if (dogUpdateDto.getId() != null && !dogUpdateDto.getId().equals(target.getId())) {
-            throw new IllegalArgumentException("Can't update the dog's id.");
+        if (dogUpdateDto.getAge() != null) {
+            target.setAge(dogUpdateDto.getAge());
         }
-        Dog newDog = dogUpdateDto.toEntity();
-        // 'patch' throws and exception.
-        target.patch(newDog);
-        dogRepository.save(target);
-        return DogUpdateDto.fromEntity(target);
+        if (dogUpdateDto.getWeight() != null) {
+            target.setWeight(dogUpdateDto.getWeight());
+        }
+        if (dogUpdateDto.getSex() != null) {
+            target.setSex(dogUpdateDto.getSex());
+        }
     }
 
+
     @Transactional
-    public DogProfileDto deleteDog(@PathVariable Long id) throws NoSuchElementException {
-        Dog target = dogRepository.findById(id).orElseThrow(
-                () -> new NoSuchElementException("Can't find the dog.")
-        );
+    public DogDto deleteDog(@PathVariable Long id) throws EntityNotFoundException {
+        Dog target = dogRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         target.emptyFriendsList();
         dogRepository.delete(target);
-        return DogProfileDto.fromEntity(target);
+        return DogDto.fromEntity(target);
     }
 
     @Transactional
-    public DogEventProfileDto joinEvent(@RequestBody DogEventUpdateDto dogEventUpdateDto) throws NoSuchElementException, IllegalArgumentException {
-        Dog targetDog = dogRepository.findById(dogEventUpdateDto.getDogId()).orElseThrow(
-                () -> new NoSuchElementException("Can't find the dog."));
-        Event targetEvent = eventRepository.findById(dogEventUpdateDto.getParticipatingEventId()).orElseThrow(
-                () -> new NoSuchElementException("Can't find the event."));
-        if (!targetDog.addEvent(targetEvent)) {
+    public DogDto joinEvent(@RequestBody DogEventUpdateDto dogEventUpdateDto) throws EntityNotFoundException, IllegalArgumentException {
+        Dog dog = dogRepository.findById(dogEventUpdateDto.getDogId()).orElseThrow(EntityNotFoundException::new);
+        Event event = eventRepository.findById(dogEventUpdateDto.getTargetEventId()).orElseThrow(EntityNotFoundException::new);
+        if (!dog.addEvent(event)) {
             throw new IllegalArgumentException("The dog is already participating the event.");
         }
-        Dog updated = dogRepository.save(targetDog);
-        return DogEventProfileDto.fromEntity(updated);
+        Dog eventAdded = dogRepository.save(dog);
+        return DogDto.fromEntity(eventAdded);
     }
 
     @Transactional
-    public List<DogFriendsNameDto> showFriends(@PathVariable Long dogId) {
-        Dog dog = dogRepository.findById(dogId).orElseThrow(
-                () -> new NoSuchElementException("Can't find the dog.")
-        );
-        return dog.getFriends().stream()
-                        .map(DogFriendsNameDto::fromEntity)
-                        .collect(Collectors.toList());
-    }
-
-    @Transactional
-    public DogFriendsNameDto makeFriends(@PathVariable Long dogId, @RequestBody Long friendId) throws NoSuchElementException, IllegalArgumentException {
-        Dog dog = dogRepository.findById(dogId).orElse(null);
-        Dog friend = dogRepository.findById(friendId).orElse(null);
-        if (dog == null || friend == null) {
-            throw new NoSuchElementException("Can't find thd dog.");
+    public DogDto cancelEvent(DogEventUpdateDto dogEventUpdateDto) throws EntityNotFoundException, IllegalArgumentException{
+        Dog dog = dogRepository.findById(dogEventUpdateDto.getDogId()).orElseThrow(EntityNotFoundException::new);
+        Event event = eventRepository.findById(dogEventUpdateDto.getTargetEventId()).orElseThrow(EntityNotFoundException::new);
+        if (!dog.removeEvent(event)) {
+            throw new IllegalArgumentException("The dog isn't participating the event.");
         }
-        if (dog.getFriends().contains(friend)) {
+        Dog eventRemoved = dogRepository.save(dog);
+        return DogDto.fromEntity(eventRemoved);
+
+    }
+
+    @Transactional
+    public List<DogDto> showFriends(@PathVariable Long dogId) {
+        Dog dog = dogRepository.findById(dogId).orElseThrow(EntityNotFoundException::new);
+        return dog.getFriends().stream().map(DogDto::fromEntity).toList();
+    }
+
+    @Transactional
+    public DogDto makeFriends(@PathVariable Long dogId, @RequestBody DogFriendDto dogFriendDto) throws EntityNotFoundException, IllegalArgumentException {
+        Dog dog = dogRepository.findById(dogId).orElseThrow(EntityNotFoundException::new);
+        Dog friend = dogRepository.findById(dogFriendDto.getFriendId()).orElseThrow(EntityNotFoundException::new);
+        if (!this.makeFriends(dog, friend)) {
             throw new IllegalArgumentException("The dogs are already friends.");
         }
-        dog.getFriends().add(friend);
         dogRepository.save(dog);
-        friend.getFriends().add(dog);
-        dogRepository.save(friend);
-        return DogFriendsNameDto.fromEntity(friend);
+        Dog newFriend = dogRepository.save(friend);
+        return DogDto.fromEntity(newFriend);
+    }
+
+    /** Take two Dog instances and add one to the other's friend Set. Used in makeFriends method. */
+    public boolean makeFriends(Dog dog, Dog friend) {
+        return dog.getFriends().add(friend);
     }
 
     @Transactional
-    public DogFriendsNameDto cancelFriends(@PathVariable Long dogId, @RequestBody Long friendId) throws NoSuchElementException, IllegalArgumentException {
-        Dog dog = dogRepository.findById(dogId).orElseThrow(
-                () -> new NoSuchElementException("Can't find thd dog.")
-        );
-        Dog friend = dogRepository.findById(friendId).orElseThrow(
-                () -> new NoSuchElementException("Can't find thd friend dog.")
-        );
-        // 양쪽을 다 확인하는 것이 좋은가? 이미 엔티티 관계 정의에 의해서 양쪽에 상호 참조하도록 되어 있기는 한데...
-        // 나중에 양쪽 중 한 쪽만 팔로잉 하는 식으로 단방향 친구 관계를 맺도록 관계 구성이 바뀐다면 더 수월하도록
-        // 양쪽에서 모두 친구 관계를 validate 하는 것이 좋을 것 같다는 생각?
-        if (!dog.getFriends().remove(friend) ||  !friend.getFriends().remove(dog)) {
+    public DogDto cancelFriends(@PathVariable Long dogId, @RequestBody DogFriendDto dogFriendDto) throws EntityNotFoundException, IllegalArgumentException {
+        Dog dog = dogRepository.findById(dogId).orElseThrow(EntityNotFoundException::new);
+        Dog friend = dogRepository.findById(dogFriendDto.getFriendId()).orElseThrow(EntityNotFoundException::new);
+        if (!cancelFriends(dog, friend)) {
             throw new IllegalArgumentException("The dogs are already not friends.");
         }
         dogRepository.save(dog);
-        friend = dogRepository.save(friend);
-        return DogFriendsNameDto.fromEntity(friend);
+        Dog exFriend = dogRepository.save(friend);
+        return DogDto.fromEntity(exFriend);
     }
 
-    public DogProfileDto cancelEvent(DogEventCancelDto dogEventCancelDto) throws NoSuchElementException, IllegalArgumentException{
-        Dog targetDog = dogRepository.findById(dogEventCancelDto.getDogId()).orElseThrow(
-                () -> new NoSuchElementException("Can't find the dog."));
-        Event targetEvent = eventRepository.findById(dogEventCancelDto.getCancellingEventId()).orElseThrow(
-                () -> new NoSuchElementException("Can't find the event."));
-        if (!targetDog.cancelEvent(targetEvent)) {
-            throw new IllegalArgumentException("The dog isn't participating the event.");
-        }
-        Dog updated = dogRepository.save(targetDog);
-        return DogProfileDto.fromEntity(updated);
 
+    /** Take two Dog instances and remove one from the other's friend Set. Used in cancelFriends method. */
+    public boolean cancelFriends(Dog dog, Dog friend) {
+        return dog.getFriends().remove(friend) && friend.getFriends().remove(dog);
     }
 
-    public LocationMembersDto joinLocation(DogLocationUpdateDto dogLocationUpdateDto) throws NoSuchElementException, IllegalArgumentException {
-        Dog targetDog = dogRepository.findById(dogLocationUpdateDto.getDogId()).orElseThrow(
-                () -> new NoSuchElementException("Can't find the dog."));
-        Location targetLocation = locationRepository.findById(dogLocationUpdateDto.getJoiningLocation()).orElseThrow(
-                () -> new NoSuchElementException("Can't find the event."));
-        if (!targetLocation.addLocation(targetDog)) {
+
+    @Transactional
+    public LocationDto joinLocation(DogLocationUpdateDto dogLocationUpdateDto) throws EntityNotFoundException, IllegalArgumentException {
+        Dog dog = dogRepository.findById(dogLocationUpdateDto.getDogId()).orElseThrow(EntityNotFoundException::new);
+        Location location = locationRepository.findById(dogLocationUpdateDto.getWalkingLocation()).orElseThrow(EntityNotFoundException::new);
+        if (!dog.joinLocation(location)) {
             throw new IllegalArgumentException("The dog is already participating the event.");
         }
-        dogRepository.save(targetDog);
-        return LocationMembersDto.fromEntity(targetLocation);
+        dogRepository.save(dog);
+        Location joined = locationRepository.save(location);
+        return LocationDto.fromEntity(joined);
     }
+
 }

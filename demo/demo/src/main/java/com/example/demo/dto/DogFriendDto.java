@@ -8,9 +8,7 @@ import org.jetbrains.annotations.NotNull;
 @NoArgsConstructor
 @Setter
 @Getter
-public class DogLocationUpdateDto {
+public class DogFriendDto {
     @NotNull
-    Long dogId;
-    @NotNull
-    Long walkingLocation;
+    Long friendId;
 }
