@@ -121,7 +121,7 @@ public class DogService {
     }
 
     @Transactional
-    public List<DogDto> showFriends(@PathVariable Long dogId) {
+    public List<DogDto> showFriends(@PathVariable Long dogId) throws EntityNotFoundException {
         Dog dog = dogRepository.findById(dogId).orElseThrow(EntityNotFoundException::new);
         return dog.getFriends().stream().map(DogDto::fromEntity).toList();
     }

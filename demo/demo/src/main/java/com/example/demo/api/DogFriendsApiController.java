@@ -3,6 +3,7 @@ package com.example.demo.api;
 import com.example.demo.dto.DogDto;
 import com.example.demo.dto.DogFriendDto;
 import com.example.demo.service.DogService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +29,9 @@ public class DogFriendsApiController {
     public ResponseEntity<List<DogDto>> showFriends(@PathVariable Long dogId) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(this.dogService.showFriends(dogId));
-        } catch (NoSuchElementException e) {
+        } catch (EntityNotFoundException e) {
             log.info(e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
@@ -39,7 +40,7 @@ public class DogFriendsApiController {
     public ResponseEntity<DogDto> makeFriends(@PathVariable Long dogId, @RequestBody @Validated DogFriendDto dogFriendDto) {
         try {
            return ResponseEntity.status(HttpStatus.OK).body(dogService.makeFriends(dogId, dogFriendDto));
-        } catch (NoSuchElementException e1) {
+        } catch (EntityNotFoundException e1) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (IllegalArgumentException e2) {
             return  ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -50,7 +51,7 @@ public class DogFriendsApiController {
     public ResponseEntity<DogDto> cancelFriends(@PathVariable Long dogId, @RequestBody DogFriendDto dogFriendDto) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(dogService.cancelFriends(dogId, dogFriendDto));
-        } catch (NoSuchElementException e1) {
+        } catch (EntityNotFoundException e1) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (IllegalArgumentException e2) {
             return  ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

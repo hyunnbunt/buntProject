@@ -37,9 +37,9 @@ public class LocationApiController {
     public ResponseEntity<LocationDto> showLocationDetail(@PathVariable Long locationId) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(locationService.showLocationsDetail(locationId));
-        } catch (NoSuchElementException e) {
+        } catch (EntityNotFoundException e) {
             log.info(e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 

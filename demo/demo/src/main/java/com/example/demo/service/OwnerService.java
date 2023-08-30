@@ -26,13 +26,13 @@ public class OwnerService {
         this.dogRepository = dogRepository;
     }
 
-    public OwnerDto showProfile(@PathVariable Long id) {
+    public OwnerDto showProfile(@PathVariable Long id) throws EntityNotFoundException {
         Owner owner = ownerRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         return OwnerDto.fromEntity(owner);
     }
 
     @Transactional
-    public OwnerDto createProfile(OwnerCreateDto ownerCreateDto) throws IllegalArgumentException {
+    public OwnerDto createProfile(OwnerCreateDto ownerCreateDto) {
         Owner owner = ownerCreateDto.toEntity();
         Owner created = ownerRepository.save(owner);
         return OwnerDto.fromEntity(created);

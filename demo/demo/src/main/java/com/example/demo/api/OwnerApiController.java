@@ -26,7 +26,7 @@ public class OwnerApiController {
     public ResponseEntity<OwnerDto> showProfile(@PathVariable Long ownerId) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(ownerService.showProfile(ownerId));
-        } catch (NoSuchElementException e) {
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
@@ -45,7 +45,7 @@ public class OwnerApiController {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(ownerService.deleteProfile(ownerId));
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 }

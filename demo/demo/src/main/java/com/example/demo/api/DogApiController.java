@@ -36,9 +36,9 @@ public class DogApiController {
     public ResponseEntity<DogDto> showDogProfile(@PathVariable Long id) {
         try {
            return ResponseEntity.status(HttpStatus.OK).body(dogService.showDogProfile(id));
-        } catch (NoSuchElementException e) {
+        } catch (EntityNotFoundException e) {
             log.info(e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
