@@ -46,14 +46,14 @@ public class DogService {
     }
 
     @Transactional
-    public DogDto createDog(@RequestBody DogCreateDto dogCreateDto) throws IllegalArgumentException {
-        Dog dog = this.toEntity(dogCreateDto, ownerService);
+    public DogDto createDog(@RequestBody DogCreateDto dogCreateDto) {
+        Dog dog = this.toEntity(dogCreateDto);
         Dog created = dogRepository.save(dog);
         return DogDto.fromEntity(created);
     }
 
     /** Convert a DogCreateDto instance to a Dog instance. Used in createDog method. */
-    private Dog toEntity(DogCreateDto dogCreateDto, OwnerService ownerService) {
+    private Dog toEntity(DogCreateDto dogCreateDto) {
         Owner owner = ownerService.getOwner(dogCreateDto.getOwnerId());
         Dog dog = new Dog();
         dog.setOwner(owner);

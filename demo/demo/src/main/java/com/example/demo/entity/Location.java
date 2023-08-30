@@ -27,7 +27,7 @@ public class Location {
     Double latitude;
     @Column(nullable = false)
     Double longitude;
-    @ManyToMany(mappedBy = "walkLocation")
+    @ManyToMany(mappedBy = "walkLocations")
     @JsonIgnore
     Set<Dog> walkingDogs;
 

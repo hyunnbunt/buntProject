@@ -17,9 +17,7 @@ insert into event(date, time, latitude, longitude) values(20231101, 2050, 11.11,
 
 insert into location(latitude, longitude) values(111.1, 222.2);
 insert into location(latitude, longitude) values(222.1, 111.1);
-
-insert into location_walking_dogs(walk_locations_id, walking_dogs_id) values(1, 3);
-insert into location_walking_dogs(walk_locations_id, walking_dogs_id) values(1, 4);
-
-insert into dog_friends(dog_id, friends_id) values(1, 2);
-insert into dog_friends(dog_id, friends_id) values(2, 1);
+--
+--
+--insert into dog_friends(dog_id, friends_id) values(1, 2);
+--insert into dog_friends(dog_id, friends_id) values(2, 1);
